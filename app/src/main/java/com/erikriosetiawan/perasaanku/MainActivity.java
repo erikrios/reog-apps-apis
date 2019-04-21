@@ -10,6 +10,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imagePerasaan;
     TextView textPerasaan;
+    boolean showingFist = true;
 
 
     @Override
@@ -19,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Perasaan Saya");
         getSupportActionBar().setSubtitle("Ini adalah perasaan saya");
-
     }
 
     public void buttonClick(View view) {
@@ -27,14 +27,14 @@ public class MainActivity extends AppCompatActivity {
         imagePerasaan = findViewById(R.id.img_happy);
         textPerasaan = findViewById(R.id.text_happy);
 
-        textPerasaan.setText(R.string.menangis);
-        imagePerasaan.setImageResource(R.drawable.img_menangis);
-
-    }
-
-    public void buttonClickMore(View view) {
-
-        textPerasaan.setText(R.string.tertawa);
-        imagePerasaan.setImageResource(R.drawable.img_tertawa);
+        if (showingFist) {
+            imagePerasaan.setImageResource(R.drawable.img_tertawa);
+            textPerasaan.setText(R.string.tertawa);
+            showingFist = false;
+        } else {
+            imagePerasaan.setImageResource(R.drawable.img_menangis);
+            textPerasaan.setText(R.string.menangis);
+            showingFist = true;
+        }
     }
 }

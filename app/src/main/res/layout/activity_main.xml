@@ -32,23 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
         android:background="@android:color/holo_purple"
         android:onClick="buttonClick"
         android:text="@string/ganti_perasaan"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btn_change_event_more"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@android:color/holo_green_light"
-        android:onClick="buttonClickMore"
-        android:text="@string/ganti_perasaan_lagi"
         android:textColor="@android:color/background_light"
         android:textSize="20sp"
         android:textStyle="bold" />
