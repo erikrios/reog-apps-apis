@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PerasaanKu</string>
+    <string name="tertawa">Tertawa</string>
+    <string name="ganti_perasaan">Ganti Perasaan</string>
+    <string name="menangis">Menangis</string>
+    <string name="ganti_perasaan_lagi">Ganti Perasaan Lagi</string>
+</resources>
