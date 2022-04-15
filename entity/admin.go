@@ -1,12 +1,17 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Admin struct {
 	ID        string
-	Username  string
-	Name      string
-	Password  string
+	Username  string `gorm:"not null"`
+	Name      string `gorm:"not null"`
+	Password  string `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
