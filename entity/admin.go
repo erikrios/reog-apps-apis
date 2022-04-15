@@ -7,10 +7,10 @@ import (
 )
 
 type Admin struct {
-	ID        string
-	Username  string `gorm:"not null"`
-	Name      string `gorm:"not null"`
-	Password  string `gorm:"not null"`
+	ID        string `gorm:"type:char(4)"`
+	Username  string `gorm:"not null;size:20"`
+	Name      string `gorm:"not null;size:50"`
+	Password  string `gorm:"not null;size:60"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
