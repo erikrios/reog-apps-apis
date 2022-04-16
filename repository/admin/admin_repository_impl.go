@@ -26,7 +26,6 @@ func (a *adminRepositoryImpl) FindByUsername(ctx context.Context, username strin
 		}
 		err = repository.ErrDatabase
 		log.Println(err)
-		return
 	}
 	return
 }
