@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/erikrios/reog-apps-apis/config"
-	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/joho/godotenv"
 )
 
@@ -23,9 +22,4 @@ func main() {
 
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
-
-	var groups []entity.Group
-
-	db.Debug().Where("id=?", "g-xya").Preload("Address").Preload("Properties").Find(&groups)
-	log.Printf("%+v", groups)
 }
