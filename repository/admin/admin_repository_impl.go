@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/repository"
@@ -24,6 +25,7 @@ func (a *adminRepositoryImpl) FindByUsername(ctx context.Context, username strin
 			return
 		}
 		err = repository.ErrDatabase
+		log.Println(err)
 		return
 	}
 	return
