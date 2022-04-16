@@ -19,7 +19,7 @@ func NewAdminRepositoryImpl(db *gorm.DB) *adminRepositoryImpl {
 }
 
 func (a *adminRepositoryImpl) FindByUsername(ctx context.Context, username string) (admin entity.Admin, err error) {
-	if dbErr := a.db.First(&admin, "username = ?", username).Error; dbErr != nil {
+	if dbErr := a.db.WithContext(ctx).First(&admin, "username = ?", username).Error; dbErr != nil {
 		if errors.Is(dbErr, gorm.ErrRecordNotFound) {
 			err = repository.ErrRecordNotFound
 			return
