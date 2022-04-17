@@ -3,6 +3,8 @@ module github.com/erikrios/reog-apps-apis
 go 1.18
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/jackc/pgconn v1.11.0
 	github.com/joho/godotenv v1.4.0
 	gorm.io/driver/postgres v1.3.4
 	gorm.io/gorm v1.23.4
@@ -10,7 +12,6 @@ require (
 
 require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.11.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
