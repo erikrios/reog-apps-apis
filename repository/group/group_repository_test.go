@@ -162,12 +162,11 @@ func TestUpdate(t *testing.T) {
 	var repo GroupRepository = NewGroupRepositoryImpl(db)
 
 	newGroup := entity.Group{
-		ID:     "g-xyb",
 		Name:   "Group Dua Update",
-		Leader: "Erik R",
+		Leader: "Erik Rio S",
 	}
 
-	if err := repo.Update(context.Background(), newGroup); err != nil {
+	if err := repo.Update(context.Background(), "g-xyb", newGroup); err != nil {
 		t.Log(err)
 	}
 }

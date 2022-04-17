@@ -65,13 +65,8 @@ func (g *groupRepositoryImpl) FindByID(ctx context.Context, id string) (group en
 	return
 }
 
-func (g *groupRepositoryImpl) Update(ctx context.Context, group entity.Group) (err error) {
-	if result := g.db.WithContext(ctx).Model(&group).Updates(
-		entity.Group{
-			Name:   group.Name,
-			Leader: group.Leader,
-		},
-	); result.Error != nil {
+func (g *groupRepositoryImpl) Update(ctx context.Context, id string, group entity.Group) (err error) {
+	if result := g.db.WithContext(ctx).Where("id = ?", id).UpdateColumns(&group); result.Error != nil {
 		log.Println(result.Error)
 		err = repository.ErrDatabase
 	} else {

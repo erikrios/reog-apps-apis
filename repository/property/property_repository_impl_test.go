@@ -50,7 +50,6 @@ func TestUpdate(t *testing.T) {
 	config.SetInitialDataPostgreSQLDatabase(db)
 
 	property := entity.Property{
-		ID:          "p-xya2222",
 		Name:        "Topeng Bujang Ganong Update",
 		Description: "Ini adalah deskripsi topeng bujang ganong",
 		Amount:      5,
@@ -58,7 +57,7 @@ func TestUpdate(t *testing.T) {
 
 	var repo PropertyRepository = NewPropertyRepositoryImpl(db)
 
-	if err := repo.Update(context.Background(), property); err != nil {
+	if err := repo.Update(context.Background(), "p-xya2222", property); err != nil {
 		t.Log(err)
 	}
 }

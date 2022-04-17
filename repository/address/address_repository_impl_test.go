@@ -28,7 +28,6 @@ func TestUpdate(t *testing.T) {
 	var repo AddressRepository = NewAddressRepositoryImpl(db)
 
 	address := entity.Address{
-		ID:           "g-xya",
 		Address:      "Address 1 Update",
 		VillageID:    "5321101010",
 		VillageName:  "Pager",
@@ -40,7 +39,7 @@ func TestUpdate(t *testing.T) {
 		ProvinceName: "Jawa Timur",
 	}
 
-	if err := repo.Update(context.Background(), address); err != nil {
+	if err := repo.Update(context.Background(), "g-xya", address); err != nil {
 		t.Log(err)
 	}
 }

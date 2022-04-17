@@ -32,12 +32,8 @@ func (p *propertyRepositoryImpl) Insert(ctx context.Context, property entity.Pro
 	return
 }
 
-func (p *propertyRepositoryImpl) Update(ctx context.Context, property entity.Property) (err error) {
-	if result := p.db.WithContext(ctx).Model(&property).Updates(entity.Property{
-		Name:        property.Name,
-		Description: property.Description,
-		Amount:      property.Amount,
-	}); result.Error != nil {
+func (p *propertyRepositoryImpl) Update(ctx context.Context, id string, property entity.Property) (err error) {
+	if result := p.db.WithContext(ctx).Where("id = ?", id).UpdateColumns(&property); result.Error != nil {
 		log.Println(result.Error)
 		err = repository.ErrDatabase
 	} else {

@@ -7,5 +7,5 @@ import (
 )
 
 type AddressRepository interface {
-	Update(ctx context.Context, address entity.Address) (err error)
+	Update(ctx context.Context, id string, address entity.Address) (err error)
 }
