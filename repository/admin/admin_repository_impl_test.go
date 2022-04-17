@@ -66,7 +66,7 @@ func TestFindByUsername(t *testing.T) {
 			expectedAdmin: entity.Admin{},
 			expectedError: repository.ErrDatabase,
 			mockBehaviour: func() {
-				mock.ExpectQuery(".*").WithArgs(sqlmock.AnyArg()).WillReturnError(repository.ErrDatabase)
+				mock.ExpectQuery(".*").WithArgs(sqlmock.AnyArg()).WillReturnError(gorm.ErrInvalidDB)
 			},
 		},
 		{
