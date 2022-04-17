@@ -165,17 +165,6 @@ func TestUpdate(t *testing.T) {
 		ID:     "g-xyb",
 		Name:   "Group Dua Update",
 		Leader: "Erik R",
-		Address: entity.Address{
-			Address:      "Address 2 Update",
-			VillageID:    "5321101010",
-			VillageName:  "Pager",
-			DistrictID:   "5321101",
-			DistrictName: "Bungkal",
-			RegencyID:    "5321",
-			RegencyName:  "Ponorogo",
-			ProvinceID:   "53",
-			ProvinceName: "Jawa Timur",
-		},
 	}
 
 	if err := repo.Update(context.Background(), newGroup); err != nil {
