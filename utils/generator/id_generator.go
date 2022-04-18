@@ -25,7 +25,7 @@ func (n *nanoidIDGenerator) GenerateGroupID() (id string, err error) {
 	return
 }
 
-func (n *nanoidIDGenerator) GenerateAdminID(id string, err error) {
+func (n *nanoidIDGenerator) GenerateAdminID() (id string, err error) {
 	id, err = n.generate(2)
 	id = fmt.Sprintf("a-%s", id)
 	return
