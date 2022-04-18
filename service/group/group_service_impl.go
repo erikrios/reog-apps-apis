@@ -102,6 +102,11 @@ func (g *groupServiceImpl) GetByID(ctx context.Context, id string) (response res
 }
 
 func (g *groupServiceImpl) Update(ctx context.Context, id string, p payload.UpdateGroup) (err error) {
+	if validateErr := validator.Validate(p); validateErr != nil {
+		err = service.ErrInvalidPayload
+		return
+	}
+
 	group := entity.Group{
 		ID:     id,
 		Name:   p.Name,

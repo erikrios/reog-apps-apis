@@ -8,6 +8,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/repository/address"
 	"github.com/erikrios/reog-apps-apis/repository/village"
 	"github.com/erikrios/reog-apps-apis/service"
+	"gopkg.in/validator.v2"
 )
 
 type addressServiceImpl struct {
@@ -26,6 +27,11 @@ func NewAddressServiceImpl(
 }
 
 func (a *addressServiceImpl) Update(ctx context.Context, id string, p payload.UpdateAddress) (err error) {
+	if validateErr := validator.Validate(p); validateErr != nil {
+		err = service.ErrInvalidPayload
+		return
+	}
+
 	village, villageErr := a.villageRepository.FindByID(p.VillageID)
 	if villageErr != nil {
 		err = service.MapError(villageErr)
