@@ -110,7 +110,12 @@ func (g *groupServiceImpl) Update(ctx context.Context, id string, p payload.Upda
 	return
 }
 
-func (g *groupServiceImpl) Delete(ctx context.Context, id string) (err error) { return }
+func (g *groupServiceImpl) Delete(ctx context.Context, id string) (err error) {
+	if repoErr := g.groupRepository.Delete(ctx, id); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
+	return
+}
 
 func (g *groupServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
 	return
