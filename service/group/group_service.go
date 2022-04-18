@@ -13,4 +13,5 @@ type GroupService interface {
 	GetByID(ctx context.Context, id string) (response response.Group, err error)
 	Update(ctx context.Context, id string, p payload.UpdateGroup) (err error)
 	Delete(ctx context.Context, id string) (err error)
+	GeterateQRCode(ctx context.Context, id string) (file []byte, err error)
 }
