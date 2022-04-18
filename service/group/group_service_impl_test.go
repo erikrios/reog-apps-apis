@@ -9,6 +9,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/model/payload"
 	"github.com/erikrios/reog-apps-apis/repository/group"
 	"github.com/erikrios/reog-apps-apis/repository/village"
+	"github.com/erikrios/reog-apps-apis/utils/generator"
 	"github.com/joho/godotenv"
 )
 
@@ -28,7 +29,8 @@ func init() {
 	config.SetInitialDataPostgreSQLDatabase(db)
 	groupRepo := group.NewGroupRepositoryImpl(db)
 	villageRepo := village.NewVillageRepositoryImpl()
-	groupService = NewGroupServiceImpl(groupRepo, villageRepo)
+	idGenerator := generator.NewNanoidIDGenerator()
+	groupService = NewGroupServiceImpl(groupRepo, villageRepo, idGenerator)
 }
 
 func TestCreate(t *testing.T) {
@@ -43,5 +45,13 @@ func TestCreate(t *testing.T) {
 		t.Log("Result err: ", err)
 	} else {
 		t.Log("Result id: ", id)
+	}
+}
+
+func TestGetAll(t *testing.T) {
+	if responses, err := groupService.GetAll(context.Background()); err != nil {
+		t.Log("Result err: ", err)
+	} else {
+		t.Logf("Result responses: %+v", responses)
 	}
 }
