@@ -7,6 +7,7 @@ require (
 	github.com/jackc/pgconn v1.11.0
 	github.com/joho/godotenv v1.4.0
 	github.com/stretchr/testify v1.7.0
+	gopkg.in/validator.v2 v2.0.1
 	gorm.io/driver/postgres v1.3.4
 	gorm.io/gorm v1.23.4
 )
