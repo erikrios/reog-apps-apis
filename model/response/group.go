@@ -11,13 +11,13 @@ type Group struct {
 type Address struct {
 	ID           string `json:"id"`
 	Address      string `json:"address"`
-	VillageID    string `json:"villageId"`
+	VillageID    string `json:"villageID"`
 	VillageName  string `json:"villageName"`
-	DistrictID   string `json:"districtId"`
+	DistrictID   string `json:"districtID"`
 	DistrictName string `json:"districtName"`
-	RegencyID    string `json:"regencyId"`
+	RegencyID    string `json:"regencyID"`
 	RegencyName  string `json:"regencyName"`
-	ProvinceID   string `json:"provinceId"`
+	ProvinceID   string `json:"provinceID"`
 	ProvinceName string `json:"provinceName"`
 }
 
