@@ -87,6 +87,13 @@ func (g *groupServiceImpl) GetAll(ctx context.Context) (responses []response.Gro
 }
 
 func (g *groupServiceImpl) GetByID(ctx context.Context, id string) (response response.Group, err error) {
+	group, repoErr := g.groupRepository.FindByID(ctx, id)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	response = mapToModel(group)
 	return
 }
 
