@@ -10,6 +10,7 @@ var (
 	ErrDataNotFound      = errors.New("service: data with given param not found")
 	ErrRepository        = errors.New("service: repository error happened")
 	ErrDataAlreadyExists = errors.New("service: data already exists")
+	ErrInvalidPayload    = errors.New("service: invalid payload")
 )
 
 func mapError(from error) error {
