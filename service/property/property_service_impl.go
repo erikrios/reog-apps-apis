@@ -9,6 +9,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/repository/property"
 	"github.com/erikrios/reog-apps-apis/service"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
+	"github.com/skip2/go-qrcode"
 	"gopkg.in/validator.v2"
 )
 
@@ -92,5 +93,9 @@ func (p *propertyServiceImpl) Delete(ctx context.Context, id string) (err error)
 }
 
 func (p *propertyServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
+	file, genErr := p.qrCodeGenerator.GenerateQRCode(id, qrcode.Medium, 2048)
+	if genErr != nil {
+		err = service.MapError(genErr)
+	}
 	return
 }
