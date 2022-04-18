@@ -98,6 +98,15 @@ func (g *groupServiceImpl) GetByID(ctx context.Context, id string) (response res
 }
 
 func (g *groupServiceImpl) Update(ctx context.Context, id string, p payload.UpdateGroup) (err error) {
+	group := entity.Group{
+		ID:     id,
+		Name:   p.Name,
+		Leader: p.Leader,
+	}
+
+	if repoErr := g.groupRepository.Update(ctx, id, group); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
 	return
 }
 
