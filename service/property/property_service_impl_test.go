@@ -59,3 +59,9 @@ func TestUpdate(t *testing.T) {
 		t.Log("error:", err)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	if err := propertyService.Delete(context.Background(), "p-FJPDo81"); err != nil {
+		t.Log("error: ", err)
+	}
+}
