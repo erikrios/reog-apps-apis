@@ -10,6 +10,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/repository/village"
 	"github.com/erikrios/reog-apps-apis/service"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
+	"github.com/skip2/go-qrcode"
 	"gopkg.in/validator.v2"
 )
 
@@ -17,17 +18,20 @@ type groupServiceImpl struct {
 	groupRepository   group.GroupRepository
 	villageRepository village.VillageRepository
 	idGenerator       generator.IDGenerator
+	qrCodeGenerator   generator.QRCodeGenerator
 }
 
 func NewGroupServiceImpl(
 	groupRepository group.GroupRepository,
 	villageRepository village.VillageRepository,
 	idGenerator generator.IDGenerator,
+	qrCodeGenerator generator.QRCodeGenerator,
 ) *groupServiceImpl {
 	return &groupServiceImpl{
 		groupRepository:   groupRepository,
 		villageRepository: villageRepository,
 		idGenerator:       idGenerator,
+		qrCodeGenerator:   qrCodeGenerator,
 	}
 }
 
@@ -118,6 +122,15 @@ func (g *groupServiceImpl) Delete(ctx context.Context, id string) (err error) {
 }
 
 func (g *groupServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
+	if _, repoErr := g.groupRepository.FindByID(ctx, id); repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	file, genErr := g.qrCodeGenerator.GenerateQRCode(id, qrcode.Medium, 2048)
+	if genErr != nil {
+		err = service.MapError(genErr)
+	}
 	return
 }
 
