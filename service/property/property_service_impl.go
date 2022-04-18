@@ -84,7 +84,12 @@ func (p *propertyServiceImpl) Update(ctx context.Context, id string, payload pay
 	return
 }
 
-func (p *propertyServiceImpl) Delete(ctx context.Context, id string) (err error) { return }
+func (p *propertyServiceImpl) Delete(ctx context.Context, id string) (err error) {
+	if repoErr := p.propertyRepository.Delete(ctx, id); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
+	return
+}
 
 func (p *propertyServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
 	return
