@@ -16,15 +16,18 @@ import (
 type groupServiceImpl struct {
 	groupRepository   group.GroupRepository
 	villageRepository village.VillageRepository
+	idGenerator       generator.IDGenerator
 }
 
 func NewGroupServiceImpl(
 	groupRepository group.GroupRepository,
 	villageRepository village.VillageRepository,
+	idGenerator generator.IDGenerator,
 ) *groupServiceImpl {
 	return &groupServiceImpl{
 		groupRepository:   groupRepository,
 		villageRepository: villageRepository,
+		idGenerator:       idGenerator,
 	}
 }
 
@@ -40,7 +43,7 @@ func (g *groupServiceImpl) Create(ctx context.Context, p payload.CreateGroup) (i
 		return
 	}
 
-	id, genErr := generator.GenerateGroupID()
+	id, genErr := g.idGenerator.GenerateGroupID()
 	if genErr != nil {
 		err = service.MapError(genErr)
 		return
@@ -73,6 +76,13 @@ func (g *groupServiceImpl) Create(ctx context.Context, p payload.CreateGroup) (i
 }
 
 func (g *groupServiceImpl) GetAll(ctx context.Context) (responses []response.Group, err error) {
+	groups, repoErr := g.groupRepository.FindAll(ctx)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	responses = mapToModels(groups)
 	return
 }
 
@@ -88,4 +98,44 @@ func (g *groupServiceImpl) Delete(ctx context.Context, id string) (err error) { 
 
 func (g *groupServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
 	return
+}
+
+func mapToModel(e entity.Group) response.Group {
+	properties := make([]response.Property, len(e.Properties))
+
+	for i, prop := range e.Properties {
+		properties[i].ID = prop.ID
+		properties[i].Name = prop.Name
+		properties[i].Amount = prop.Amount
+		properties[i].Description = prop.Description
+	}
+
+	return response.Group{
+		ID:     e.ID,
+		Name:   e.Name,
+		Leader: e.Leader,
+		Address: response.Address{
+			ID:           e.Address.ID,
+			Address:      e.Address.Address,
+			VillageID:    e.Address.VillageID,
+			VillageName:  e.Address.VillageName,
+			DistrictID:   e.Address.DistrictID,
+			DistrictName: e.Address.DistrictName,
+			RegencyID:    e.Address.RegencyID,
+			RegencyName:  e.Address.RegencyName,
+			ProvinceID:   e.Address.ProvinceID,
+			ProvinceName: e.Address.ProvinceName,
+		},
+		Properties: properties,
+	}
+}
+
+func mapToModels(entities []entity.Group) []response.Group {
+	groups := make([]response.Group, len(entities))
+
+	for i, e := range entities {
+		groups[i] = mapToModel(e)
+	}
+
+	return groups
 }
