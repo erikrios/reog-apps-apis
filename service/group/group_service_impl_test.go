@@ -55,3 +55,11 @@ func TestGetAll(t *testing.T) {
 		t.Logf("Result responses: %+v", responses)
 	}
 }
+
+func TestGetByID(t *testing.T) {
+	if response, err := groupService.GetByID(context.Background(), "g-bYE"); err != nil {
+		t.Log("Result err: ", err)
+	} else {
+		t.Logf("Result responses: %+v", response)
+	}
+}
