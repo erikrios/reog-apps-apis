@@ -30,7 +30,8 @@ func init() {
 	groupRepo := group.NewGroupRepositoryImpl(db)
 	villageRepo := village.NewVillageRepositoryImpl()
 	idGenerator := generator.NewNanoidIDGenerator()
-	groupService = NewGroupServiceImpl(groupRepo, villageRepo, idGenerator)
+	qrCodeGenerator := generator.NewQRCodeGeneratorImpl()
+	groupService = NewGroupServiceImpl(groupRepo, villageRepo, idGenerator, qrCodeGenerator)
 }
 
 func TestCreate(t *testing.T) {
@@ -77,5 +78,13 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	if err := groupService.Delete(context.Background(), "g-bYE"); err != nil {
 		t.Log("Result err: ", err)
+	}
+}
+
+func TestGenerateQRCode(t *testing.T) {
+	if file, err := groupService.GeterateQRCode(context.Background(), "g-eaI"); err != nil {
+		t.Log("Result err: ", err)
+	} else {
+		t.Logf("Result responses: %v", file)
 	}
 }
