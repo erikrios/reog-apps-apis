@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/erikrios/reog-apps-apis/entity"
+	"github.com/erikrios/reog-apps-apis/utils/generator"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -30,8 +31,13 @@ func MigratePostgreSQLDatabase(db *gorm.DB) error {
 }
 
 func SetInitialDataPostgreSQLDatabase(db *gorm.DB) error {
+	idGenerator := generator.NewNanoidIDGenerator()
+	id, err := idGenerator.GenerateAdminID()
+	if err != nil {
+		return err
+	}
 	admin := &entity.Admin{
-		ID:       "a-xy",
+		ID:       id,
 		Username: "admin",
 		Name:     "Administrator",
 		Password: "admin",
