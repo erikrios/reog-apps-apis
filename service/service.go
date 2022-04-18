@@ -13,7 +13,7 @@ var (
 	ErrInvalidPayload    = errors.New("service: invalid payload")
 )
 
-func mapError(from error) error {
+func MapError(from error) error {
 	if errors.Is(from, repository.ErrRecordNotFound) {
 		return ErrDataNotFound
 	} else if errors.Is(from, repository.ErrDatabase) {
