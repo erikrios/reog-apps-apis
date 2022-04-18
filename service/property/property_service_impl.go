@@ -70,6 +70,17 @@ func (p *propertyServiceImpl) Update(ctx context.Context, id string, payload pay
 		err = service.ErrInvalidPayload
 		return
 	}
+
+	property := entity.Property{
+		ID:          id,
+		Name:        payload.Name,
+		Description: payload.Description,
+		Amount:      payload.Amount,
+	}
+
+	if repoErr := p.propertyRepository.Update(ctx, id, property); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
 	return
 }
 
