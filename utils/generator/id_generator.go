@@ -9,7 +9,6 @@ import (
 type IDGenerator interface {
 	GenerateGroupID() (id string, err error)
 	GenerateAdminID(id string, err error)
-	GenerateAddressID() (id string, err error)
 	GeneratePropertyID() (id string, err error)
 }
 
@@ -28,12 +27,6 @@ func (n *nanoidIDGenerator) GenerateGroupID() (id string, err error) {
 
 func (n *nanoidIDGenerator) GenerateAdminID(id string, err error) {
 	id, err = n.generate(2)
-	id = fmt.Sprintf("u-%s", id)
-	return
-}
-
-func (n *nanoidIDGenerator) GenerateAddressID() (id string, err error) {
-	id, err = n.generate(3)
 	id = fmt.Sprintf("a-%s", id)
 	return
 }
