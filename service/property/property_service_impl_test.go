@@ -47,3 +47,15 @@ func TestCreate(t *testing.T) {
 		t.Log("no error:", id)
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	payload := payload.UpdateProperty{
+		Name:        "Bujang Ganong Update",
+		Description: "Ini adalah bujang ganong update",
+		Amount:      10,
+	}
+
+	if err := propertyService.Update(context.Background(), "p-FJPDo81", payload); err != nil {
+		t.Log("error:", err)
+	}
+}
