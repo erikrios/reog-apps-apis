@@ -7,6 +7,7 @@ require (
 	github.com/aidarkhanov/nanoid/v2 v2.0.5
 	github.com/jackc/pgconn v1.11.0
 	github.com/joho/godotenv v1.4.0
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	gopkg.in/validator.v2 v2.0.1
