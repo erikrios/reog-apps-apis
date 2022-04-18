@@ -63,3 +63,13 @@ func TestGetByID(t *testing.T) {
 		t.Logf("Result responses: %+v", response)
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	payload := payload.UpdateGroup{
+		Name:   "Group Dua Update",
+		Leader: "Erik Rio S",
+	}
+	if err := groupService.Update(context.Background(), "g-bYE", payload); err != nil {
+		t.Log("Result err: ", err)
+	}
+}
