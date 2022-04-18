@@ -62,6 +62,14 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	if err := propertyService.Delete(context.Background(), "p-FJPDo81"); err != nil {
-		t.Log("error: ", err)
+		t.Log("error:", err)
+	}
+}
+
+func TestGenerateQRCode(t *testing.T) {
+	if file, err := propertyService.GeterateQRCode(context.Background(), "p-a0lFacS"); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Log("no error:", file)
 	}
 }
