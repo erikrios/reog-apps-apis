@@ -73,3 +73,9 @@ func TestUpdate(t *testing.T) {
 		t.Log("Result err: ", err)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	if err := groupService.Delete(context.Background(), "g-bYE"); err != nil {
+		t.Log("Result err: ", err)
+	}
+}
