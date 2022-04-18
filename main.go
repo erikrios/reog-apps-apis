@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/erikrios/reog-apps-apis/config"
+	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
 )
 
