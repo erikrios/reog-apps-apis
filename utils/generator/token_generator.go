@@ -35,10 +35,12 @@ func (j *jwtTokenGenerator) GenerateToken(id, username string) (token string, er
 
 func (j *jwtTokenGenerator) ExtractToken() (id, username string) {
 	user := j.c.Get("user").(*jwt.Token)
+
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
 		id = claims["id"].(string)
 		username = claims["username"].(string)
 	}
+
 	return
 }
