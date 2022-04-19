@@ -4,7 +4,7 @@ import "golang.org/x/crypto/bcrypt"
 
 type PasswordGenerator interface {
 	GenerateFromPassword(password []byte, cost int) ([]byte, error)
-	CompareHashAndPassword(hashedPassword, password []byte)
+	CompareHashAndPassword(hashedPassword, password []byte) error
 }
 
 type bcryptPasswordGenerator struct{}
