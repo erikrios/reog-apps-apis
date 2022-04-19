@@ -17,6 +17,10 @@ type jwtTokenGenerator struct {
 	c echo.Context
 }
 
+func NewJWTTokenGenerator(c echo.Context) *jwtTokenGenerator {
+	return &jwtTokenGenerator{c: c}
+}
+
 func (j *jwtTokenGenerator) GenerateToken(id, username string) (token string, err error) {
 	claims := jwt.MapClaims{
 		"id":       id,
