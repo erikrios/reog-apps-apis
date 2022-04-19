@@ -39,15 +39,15 @@ func SetInitialDataPostgreSQLDatabase(db *gorm.DB) error {
 		return err
 	}
 
-	password, err := passwordGenerator.GenerateFromPassword([]byte("admin"), 10)
+	password, err := passwordGenerator.GenerateFromPassword([]byte(os.Getenv("ADMIN_PASSWORD")), 10)
 	if err != nil {
 		return err
 	}
 
 	admin := &entity.Admin{
 		ID:       id,
-		Username: "admin",
-		Name:     "Administrator",
+		Username: os.Getenv("ADMIN_USERNAME"),
+		Name:     os.Getenv("ADMIN_NAME"),
 		Password: string(password),
 	}
 
