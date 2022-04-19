@@ -8,7 +8,7 @@ import (
 
 type IDGenerator interface {
 	GenerateGroupID() (id string, err error)
-	GenerateAdminID(id string, err error)
+	GenerateAdminID() (id string, err error)
 	GeneratePropertyID() (id string, err error)
 }
 
