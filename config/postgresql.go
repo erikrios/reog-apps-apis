@@ -32,15 +32,23 @@ func MigratePostgreSQLDatabase(db *gorm.DB) error {
 
 func SetInitialDataPostgreSQLDatabase(db *gorm.DB) error {
 	idGenerator := generator.NewNanoidIDGenerator()
+	passwordGenerator := generator.NewBcryptPasswordGenerator()
+
 	id, err := idGenerator.GenerateAdminID()
 	if err != nil {
 		return err
 	}
+
+	password, err := passwordGenerator.GenerateFromPassword([]byte("admin"), 10)
+	if err != nil {
+		return err
+	}
+
 	admin := &entity.Admin{
 		ID:       id,
 		Username: "admin",
 		Name:     "Administrator",
-		Password: "admin",
+		Password: string(password),
 	}
 
 	result := db.Save(admin)
