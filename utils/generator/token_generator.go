@@ -26,6 +26,7 @@ func (j *jwtTokenGenerator) GenerateToken(id, username string) (token string, er
 		"id":       id,
 		"username": username,
 		"exp":      time.Now().Add(time.Hour * 1).Unix(),
+		"iat":      time.Now().Unix(),
 	}
 
 	jwtWithClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
