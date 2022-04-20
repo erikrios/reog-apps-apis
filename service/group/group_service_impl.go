@@ -126,7 +126,7 @@ func (g *groupServiceImpl) Delete(ctx context.Context, id string) (err error) {
 	return
 }
 
-func (g *groupServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
+func (g *groupServiceImpl) GenerateQRCode(ctx context.Context, id string) (file []byte, err error) {
 	if _, repoErr := g.groupRepository.FindByID(ctx, id); repoErr != nil {
 		err = service.MapError(repoErr)
 		return
