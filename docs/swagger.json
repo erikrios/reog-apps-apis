@@ -75,20 +75,110 @@
                     }
                 }
             }
+        },
+        "/groups": {
+            "post": {
+                "description": "Create a new group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Create a Group",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.CreateGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.createGroupResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "controller.createGroupResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.idData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.loginResponse": {
             "type": "object",
             "properties": {
-                "data": {
-                    "$ref": "#/definitions/controller.tokenData"
+                "status": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "0"
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "1"
                 },
-                "status": {
-                    "type": "string"
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.tokenData"
                 }
             }
         },
@@ -106,18 +196,49 @@
                 "message": {}
             }
         },
+        "payload.CreateGroup": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "leader": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "address": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "2"
+                },
+                "villageID": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 2,
+                    "x-order": "3"
+                }
+            }
+        },
         "payload.Credential": {
             "type": "object",
             "properties": {
-                "password": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
-                },
                 "username": {
                     "type": "string",
                     "maxLength": 20,
-                    "minLength": 2
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2,
+                    "x-order": "1"
                 }
             }
         }

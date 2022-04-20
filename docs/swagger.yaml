@@ -1,13 +1,37 @@
 basePath: /api/v1
 definitions:
+  controller.createGroupResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.idData:
+    properties:
+      id:
+        type: string
+    type: object
   controller.loginResponse:
     properties:
       data:
         $ref: '#/definitions/controller.tokenData'
+        x-order: "2"
       message:
+        maxLength: 80
+        minLength: 2
         type: string
+        x-order: "1"
       status:
+        maxLength: 80
+        minLength: 2
         type: string
+        x-order: "0"
     type: object
   controller.tokenData:
     properties:
@@ -18,16 +42,41 @@ definitions:
     properties:
       message: {}
     type: object
+  payload.CreateGroup:
+    properties:
+      address:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "2"
+      leader:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+      villageID:
+        maxLength: 20
+        minLength: 2
+        type: string
+        x-order: "3"
+    type: object
   payload.Credential:
     properties:
       password:
         maxLength: 50
         minLength: 2
         type: string
+        x-order: "1"
       username:
         maxLength: 20
         minLength: 2
         type: string
+        x-order: "0"
     type: object
 host: localhost
 info:
@@ -81,4 +130,42 @@ paths:
       summary: Admin Login
       tags:
       - admins
+  /groups:
+    post:
+      consumes:
+      - application/json
+      description: Create a new group
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateGroup'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a Group
+      tags:
+      - groups
 swagger: "2.0"
