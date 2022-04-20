@@ -24,6 +24,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.POST("", g.postCreateGroup)
 	group.GET("", g.getGroups)
 	group.GET("/:id", g.getGroupByID)
+	group.PUT("/:id", g.putUpdateGroupByID)
 }
 
 // postCreateGroup godoc
@@ -34,9 +35,9 @@ func (g *groupsController) Route(e *echo.Group) {
 // @Produce      json
 // @Param        default  body      payload.CreateGroup  true  "request body"
 // @Success      201      {object}  createGroupResponse
-// @Failure      400      {object}  echo.HTTPError
+// @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
-// @Failure      404      {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups [post]
 func (g *groupsController) postCreateGroup(c echo.Context) error {
@@ -97,6 +98,35 @@ func (g *groupsController) getGroupByID(c echo.Context) error {
 	groupResponse := map[string]any{"group": group}
 	response := model.NewResponse("success", "successfully get group with id "+id, groupResponse)
 	return c.JSON(http.StatusOK, response)
+}
+
+// putUpdateGroupByID godoc
+// @Summary      Update a Group
+// @Description  Update a group
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        default  body  payload.UpdateGroup  true  "request body"
+// @Success      204
+// @Failure      400      {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404      {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id} [put]
+func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
+	id := c.Param("id")
+
+	payload := new(payload.UpdateGroup)
+	if err := c.Bind(payload); err != nil {
+		return newErrorResponse(service.ErrInvalidPayload)
+	}
+
+	err := g.service.Update(c.Request().Context(), id, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
