@@ -170,6 +170,47 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/groups/{id}": {
+            "get": {
+                "description": "Get group by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Get Group by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.groupResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -187,6 +228,31 @@ const docTemplate = `{
                 "data": {
                     "x-order": "2",
                     "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.groupData": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "$ref": "#/definitions/response.Group"
+                }
+            }
+        },
+        "controller.groupResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.groupData"
                 }
             }
         },
@@ -330,11 +396,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
