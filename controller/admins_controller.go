@@ -54,9 +54,9 @@ func (a *adminsController) postLogin(c echo.Context) error {
 
 // loginResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
 type loginResponse struct {
-	Status  string    `json:"status"`
-	Message string    `json:"message"`
-	Data    tokenData `json:"data"`
+	Status  string    `json:"status" validate:"nonzero,min=2,max=80" extensions:"x-order=0"`
+	Message string    `json:"message" validate:"nonzero,min=2,max=80" extensions:"x-order=1"`
+	Data    tokenData `json:"data" validate:"nonzero,min=2,max=80" extensions:"x-order=2"`
 }
 
 type tokenData struct {
