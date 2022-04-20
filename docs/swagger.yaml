@@ -391,4 +391,31 @@ paths:
       summary: Update a Group
       tags:
       - groups
+  /groups/{id}/generate:
+    get:
+      description: Generate QR Code
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Generate QR Code
+      tags:
+      - groups
 swagger: "2.0"

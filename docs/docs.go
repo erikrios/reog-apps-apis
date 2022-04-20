@@ -300,6 +300,47 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/groups/{id}/generate": {
+            "get": {
+                "description": "Generate QR Code",
+                "produces": [
+                    "image/png"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Generate QR Code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -502,11 +543,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
