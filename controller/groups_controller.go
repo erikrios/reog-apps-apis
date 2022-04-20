@@ -23,6 +23,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group := e.Group("/groups")
 	group.POST("", g.postCreateGroup)
 	group.GET("", g.getGroups)
+	group.GET("/:id", g.getGroupByID)
 }
 
 // postCreateGroup godoc
@@ -74,6 +75,30 @@ func (g *groupsController) getGroups(c echo.Context) error {
 	return c.JSON(http.StatusOK, responses)
 }
 
+//  getGroupByID godoc
+// @Summary      Get Group by ID
+// @Description  Get group by ID
+// @Tags         groups
+// @Produce      json
+// @Param        id   path      string  true  "group ID"
+// @Success      200  {object}  groupResponse
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id} [get]
+func (g *groupsController) getGroupByID(c echo.Context) error {
+	id := c.Param("id")
+
+	group, err := g.service.GetByID(c.Request().Context(), id)
+
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	groupResponse := map[string]any{"group": group}
+	response := model.NewResponse("success", "successfully get group with id "+id, groupResponse)
+	return c.JSON(http.StatusOK, response)
+}
+
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
 type createGroupResponse struct {
 	Status  string `json:"status" extensions:"x-order=0"`
@@ -94,4 +119,15 @@ type groupsResponse struct {
 
 type groupsData struct {
 	Groups []response.Group `json:"groups"`
+}
+
+// groupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
+type groupResponse struct {
+	Status  string    `json:"status" extensions:"x-order=0"`
+	Message string    `json:"message" extensions:"x-order=1"`
+	Data    groupData `json:"data" extensions:"x-order=2"`
+}
+
+type groupData struct {
+	Group response.Group `json:"group"`
 }
