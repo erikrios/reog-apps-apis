@@ -9,7 +9,10 @@ import (
 	_ "github.com/erikrios/reog-apps-apis/docs"
 	"github.com/erikrios/reog-apps-apis/middleware"
 	ar "github.com/erikrios/reog-apps-apis/repository/admin"
+	gr "github.com/erikrios/reog-apps-apis/repository/group"
+	vr "github.com/erikrios/reog-apps-apis/repository/village"
 	as "github.com/erikrios/reog-apps-apis/service/admin"
+	gs "github.com/erikrios/reog-apps-apis/service/group"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
 	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
@@ -51,12 +54,18 @@ func main() {
 
 	passwordGenerator := generator.NewBcryptPasswordGenerator()
 	tokenGenerator := generator.NewJWTTokenGenerator()
+	idGenerator := generator.NewNanoidIDGenerator()
+	qrCodeGenerator := generator.NewQRCodeGeneratorImpl()
 
 	adminRepository := ar.NewAdminRepositoryImpl(db)
+	groupRepository := gr.NewGroupRepositoryImpl(db)
+	villageRepository := vr.NewVillageRepositoryImpl()
 
 	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
+	groupService := gs.NewGroupServiceImpl(groupRepository, villageRepository, idGenerator, qrCodeGenerator)
 
 	adminsController := controller.NewAdminsController(adminService)
+	groupsController := controller.NewGroupsController(groupService)
 
 	e := echo.New()
 
@@ -76,6 +85,7 @@ func main() {
 
 	g := e.Group("/api/v1")
 	adminsController.Route(g)
+	groupsController.Route(g)
 
 	e.Logger.Fatal(e.Start(port))
 }
