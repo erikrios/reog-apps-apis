@@ -306,6 +306,30 @@ paths:
       tags:
       - groups
   /groups/{id}:
+    delete:
+      description: Delete group by ID
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Delete Group by ID
+      tags:
+      - groups
     get:
       description: Get group by ID
       parameters:

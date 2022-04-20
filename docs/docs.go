@@ -263,6 +263,42 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Delete group by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Delete Group by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
             }
         }
     },
