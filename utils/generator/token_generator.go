@@ -10,15 +10,13 @@ import (
 
 type TokenGenerator interface {
 	GenerateToken(id, username string) (token string, err error)
-	ExtractToken() (id, username string)
+	ExtractToken(c echo.Context) (id, username string)
 }
 
-type jwtTokenGenerator struct {
-	c echo.Context
-}
+type jwtTokenGenerator struct{}
 
-func NewJWTTokenGenerator(c echo.Context) *jwtTokenGenerator {
-	return &jwtTokenGenerator{c: c}
+func NewJWTTokenGenerator() *jwtTokenGenerator {
+	return &jwtTokenGenerator{}
 }
 
 func (j *jwtTokenGenerator) GenerateToken(id, username string) (token string, err error) {
@@ -34,8 +32,8 @@ func (j *jwtTokenGenerator) GenerateToken(id, username string) (token string, er
 	return
 }
 
-func (j *jwtTokenGenerator) ExtractToken() (id, username string) {
-	user := j.c.Get("user").(*jwt.Token)
+func (j *jwtTokenGenerator) ExtractToken(c echo.Context) (id, username string) {
+	user := c.Get("user").(*jwt.Token)
 
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)

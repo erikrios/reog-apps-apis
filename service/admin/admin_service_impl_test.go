@@ -10,7 +10,6 @@ import (
 	"github.com/erikrios/reog-apps-apis/repository/admin"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
 )
 
 var adminService AdminService
@@ -29,7 +28,7 @@ func init() {
 	config.SetInitialDataPostgreSQLDatabase(db)
 	adminRepo := admin.NewAdminRepositoryImpl(db)
 	bcryptPasswordGenerator := generator.NewBcryptPasswordGenerator()
-	jwtTokenGenerator := generator.NewJWTTokenGenerator(echo.New().NewContext(nil, nil))
+	jwtTokenGenerator := generator.NewJWTTokenGenerator()
 	adminService = NewAdminServiceImpl(adminRepo, bcryptPasswordGenerator, jwtTokenGenerator)
 }
 
