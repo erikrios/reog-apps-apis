@@ -1,4 +1,34 @@
 basePath: /api/v1
+definitions:
+  controller.loginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.tokenData'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  controller.tokenData:
+    properties:
+      token:
+        type: string
+    type: object
+  echo.HTTPError:
+    properties:
+      message: {}
+    type: object
+  payload.Credential:
+    properties:
+      password:
+        maxLength: 50
+        minLength: 2
+        type: string
+      username:
+        maxLength: 20
+        minLength: 2
+        type: string
+    type: object
 host: localhost
 info:
   contact:
@@ -12,5 +42,43 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Reog Apps API
   version: "1.0"
-paths: {}
+paths:
+  /admins:
+    post:
+      consumes:
+      - application/json
+      description: Admin login
+      parameters:
+      - description: admin credentials
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.Credential'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Admin Login
+      tags:
+      - admins
 swagger: "2.0"
