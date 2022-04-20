@@ -12,6 +12,25 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.groupsData:
+    properties:
+      groups:
+        items:
+          $ref: '#/definitions/response.Group'
+        type: array
+    type: object
+  controller.groupsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.groupsData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.idData:
     properties:
       id:
@@ -78,6 +97,74 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  response.Address:
+    properties:
+      address:
+        type: string
+        x-order: "1"
+      districtID:
+        type: string
+        x-order: "4"
+      districtName:
+        type: string
+        x-order: "5"
+      id:
+        type: string
+        x-order: "0"
+      provinceID:
+        type: string
+        x-order: "7"
+      provinceName:
+        type: string
+        x-order: "8"
+      regencyID:
+        type: string
+        x-order: "5"
+      regencyName:
+        type: string
+        x-order: "6"
+      villageID:
+        type: string
+        x-order: "2"
+      villageName:
+        type: string
+        x-order: "3"
+    type: object
+  response.Group:
+    properties:
+      address:
+        $ref: '#/definitions/response.Address'
+        x-order: "3"
+      id:
+        type: string
+        x-order: "0"
+      leader:
+        type: string
+        x-order: "2"
+      name:
+        type: string
+        x-order: "1"
+      properties:
+        items:
+          $ref: '#/definitions/response.Property'
+        type: array
+        x-order: "4"
+    type: object
+  response.Property:
+    properties:
+      amount:
+        type: integer
+        x-order: "3"
+      description:
+        type: string
+        x-order: "2"
+      id:
+        type: string
+        x-order: "0"
+      name:
+        type: string
+        x-order: "1"
+    type: object
 host: localhost
 info:
   contact:
@@ -131,6 +218,26 @@ paths:
       tags:
       - admins
   /groups:
+    get:
+      description: Get Groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.groupsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get Groups
+      tags:
+      - groups
     post:
       consumes:
       - application/json

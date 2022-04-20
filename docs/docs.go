@@ -84,6 +84,36 @@ const docTemplate = `{
             }
         },
         "/groups": {
+            "get": {
+                "description": "Get Groups",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Get Groups",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.groupsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new group",
                 "consumes": [
@@ -157,6 +187,34 @@ const docTemplate = `{
                 "data": {
                     "x-order": "2",
                     "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.groupsData": {
+            "type": "object",
+            "properties": {
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Group"
+                    }
+                }
+            }
+        },
+        "controller.groupsResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.groupsData"
                 }
             }
         },
@@ -246,6 +304,100 @@ const docTemplate = `{
                     "maxLength": 50,
                     "minLength": 2,
                     "x-order": "1"
+                }
+            }
+        },
+        "response.Address": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "address": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "villageID": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "villageName": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "districtID": {
+                    "type": "string",
+                    "x-order": "4"
+                },
+                "districtName": {
+                    "type": "string",
+                    "x-order": "5"
+                },
+                "regencyID": {
+                    "type": "string",
+                    "x-order": "5"
+                },
+                "regencyName": {
+                    "type": "string",
+                    "x-order": "6"
+                },
+                "provinceID": {
+                    "type": "string",
+                    "x-order": "7"
+                },
+                "provinceName": {
+                    "type": "string",
+                    "x-order": "8"
+                }
+            }
+        },
+        "response.Group": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "name": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "leader": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "address": {
+                    "x-order": "3",
+                    "$ref": "#/definitions/response.Address"
+                },
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.Property"
+                    },
+                    "x-order": "4"
+                }
+            }
+        },
+        "response.Property": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "name": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "description": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "amount": {
+                    "type": "integer",
+                    "x-order": "3"
                 }
             }
         }
