@@ -210,6 +210,59 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Update a group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Update a Group",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.UpdateGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
             }
         }
     },
@@ -373,6 +426,23 @@ const docTemplate = `{
                 }
             }
         },
+        "payload.UpdateGroup": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "leader": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 2,
+                    "x-order": "1"
+                }
+            }
+        },
         "response.Address": {
             "type": "object",
             "properties": {
@@ -396,11 +466,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },

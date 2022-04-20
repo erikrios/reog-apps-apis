@@ -114,6 +114,19 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  payload.UpdateGroup:
+    properties:
+      leader:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
   response.Address:
     properties:
       address:
@@ -317,6 +330,41 @@ paths:
           schema:
             $ref: '#/definitions/echo.HTTPError'
       summary: Get Group by ID
+      tags:
+      - groups
+    put:
+      consumes:
+      - application/json
+      description: Update a group
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateGroup'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update a Group
       tags:
       - groups
 swagger: "2.0"
