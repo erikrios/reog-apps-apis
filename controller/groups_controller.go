@@ -25,6 +25,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.GET("", g.getGroups)
 	group.GET("/:id", g.getGroupByID)
 	group.PUT("/:id", g.putUpdateGroupByID)
+	group.DELETE("/:id", g.deleteGroupByID)
 }
 
 // postCreateGroup godoc
@@ -81,7 +82,7 @@ func (g *groupsController) getGroups(c echo.Context) error {
 // @Description  Get group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id   path      string  true  "group ID"
+// @Param        id  path  string  true  "group ID"
 // @Success      200  {object}  groupResponse
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -122,6 +123,28 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 	}
 
 	err := g.service.Update(c.Request().Context(), id, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
+// deleteGroupByID godoc
+// @Summary      Delete Group by ID
+// @Description  Delete group by ID
+// @Tags         groups
+// @Produce      json
+// @Param        id   path      string  true  "group ID"
+// @Success      204
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id} [delete]
+func (g *groupsController) deleteGroupByID(c echo.Context) error {
+	id := c.Param("id")
+
+	err := g.service.Delete(c.Request().Context(), id)
+
 	if err != nil {
 		return newErrorResponse(err)
 	}
