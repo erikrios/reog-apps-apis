@@ -5,8 +5,12 @@ import (
 	"os"
 
 	"github.com/erikrios/reog-apps-apis/config"
+	"github.com/erikrios/reog-apps-apis/controller"
 	_ "github.com/erikrios/reog-apps-apis/docs"
 	"github.com/erikrios/reog-apps-apis/middleware"
+	ar "github.com/erikrios/reog-apps-apis/repository/admin"
+	as "github.com/erikrios/reog-apps-apis/service/admin"
+	"github.com/erikrios/reog-apps-apis/utils/generator"
 	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -45,6 +49,15 @@ func main() {
 
 	port := ":" + os.Getenv("PORT")
 
+	passwordGenerator := generator.NewBcryptPasswordGenerator()
+	tokenGenerator := generator.NewJWTTokenGenerator()
+
+	adminRepository := ar.NewAdminRepositoryImpl(db)
+
+	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
+
+	adminsController := controller.NewAdminsController(adminService)
+
 	e := echo.New()
 
 	if os.Getenv("ENV") == "production" {
@@ -61,7 +74,8 @@ func main() {
 
 	e.GET("/*", echoSwagger.WrapHandler)
 
-	_ = e.Group("/api/v1")
+	g := e.Group("/api/v1")
+	adminsController.Route(g)
 
 	e.Logger.Fatal(e.Start(port))
 }
