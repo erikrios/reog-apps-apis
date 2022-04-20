@@ -26,6 +26,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.GET("/:id", g.getGroupByID)
 	group.PUT("/:id", g.putUpdateGroupByID)
 	group.DELETE("/:id", g.deleteGroupByID)
+	group.GET("/:id/generate", g.getGenerateQRCode)
 }
 
 // postCreateGroup godoc
@@ -82,7 +83,7 @@ func (g *groupsController) getGroups(c echo.Context) error {
 // @Description  Get group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id  path  string  true  "group ID"
+// @Param        id   path      string  true  "group ID"
 // @Success      200  {object}  groupResponse
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -150,6 +151,28 @@ func (g *groupsController) deleteGroupByID(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// getGenerateQRCode godoc
+// @Summary      Generate QR Code
+// @Description  Generate QR Code
+// @Tags         groups
+// @Produce      image/png
+// @Param        id  path  string  true  "group ID"
+// @Success      200  {file}    binary
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id}/generate [get]
+func (g *groupsController) getGenerateQRCode(c echo.Context) error {
+	id := c.Param("id")
+
+	file, err := g.service.GenerateQRCode(c.Request().Context(), id)
+
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.Blob(http.StatusOK, "image/png", file)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
