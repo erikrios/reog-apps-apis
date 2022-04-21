@@ -12,6 +12,18 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.createPropertyResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.groupData:
     properties:
       group:
@@ -100,6 +112,23 @@ definitions:
         minLength: 2
         type: string
         x-order: "3"
+    type: object
+  payload.CreateProperty:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+        x-order: "2"
+      description:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
     type: object
   payload.Credential:
     properties:
@@ -416,6 +445,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/payload.UpdateGroup'
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -465,6 +499,49 @@ paths:
           schema:
             $ref: '#/definitions/echo.HTTPError'
       summary: Generate QR Code
+      tags:
+      - groups
+  /groups/{id}/properties:
+    post:
+      consumes:
+      - application/json
+      description: Add a Property
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateProperty'
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createPropertyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Add a Property
       tags:
       - groups
 swagger: "2.0"
