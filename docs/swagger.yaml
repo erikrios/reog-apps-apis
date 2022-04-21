@@ -114,6 +114,19 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  payload.UpdateAddress:
+    properties:
+      address:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "0"
+      villageID:
+        maxLength: 20
+        minLength: 2
+        type: string
+        x-order: "1"
+    type: object
   payload.UpdateGroup:
     properties:
       leader:
@@ -209,6 +222,42 @@ info:
   title: Reog Apps API
   version: "1.0"
 paths:
+  /addresses/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an address
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateAddress'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update an Address
+      tags:
+      - addresses
   /admins:
     post:
       consumes:
