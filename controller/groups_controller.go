@@ -8,15 +8,23 @@ import (
 	"github.com/erikrios/reog-apps-apis/model/response"
 	"github.com/erikrios/reog-apps-apis/service"
 	"github.com/erikrios/reog-apps-apis/service/group"
+	"github.com/erikrios/reog-apps-apis/service/property"
 	"github.com/labstack/echo/v4"
 )
 
 type groupsController struct {
-	service group.GroupService
+	groupService    group.GroupService
+	propertyService property.PropertyService
 }
 
-func NewGroupsController(service group.GroupService) *groupsController {
-	return &groupsController{service: service}
+func NewGroupsController(
+	groupService group.GroupService,
+	propertyService property.PropertyService,
+) *groupsController {
+	return &groupsController{
+		groupService:    groupService,
+		propertyService: propertyService,
+	}
 }
 
 func (g *groupsController) Route(e *echo.Group) {
@@ -27,6 +35,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.PUT("/:id", g.putUpdateGroupByID)
 	group.DELETE("/:id", g.deleteGroupByID)
 	group.GET("/:id/generate", g.getGenerateQRCode)
+	group.POST("/:id/properties", g.postCreateProperty)
 }
 
 // postCreateGroup godoc
@@ -37,10 +46,10 @@ func (g *groupsController) Route(e *echo.Group) {
 // @Produce      json
 // @Param        default  body      payload.CreateGroup  true  "request body"
 // @Success      201      {object}  createGroupResponse
-// @Failure      400  {object}  echo.HTTPError
-// @Failure      401  {object}  echo.HTTPError
-// @Failure      404  {object}  echo.HTTPError
-// @Failure      500  {object}  echo.HTTPError
+// @Failure      400      {object}  echo.HTTPError
+// @Failure      401      {object}  echo.HTTPError
+// @Failure      404      {object}  echo.HTTPError
+// @Failure      500      {object}  echo.HTTPError
 // @Router       /groups [post]
 func (g *groupsController) postCreateGroup(c echo.Context) error {
 	payload := new(payload.CreateGroup)
@@ -48,7 +57,7 @@ func (g *groupsController) postCreateGroup(c echo.Context) error {
 		return newErrorResponse(service.ErrInvalidPayload)
 	}
 
-	id, err := g.service.Create(c.Request().Context(), *payload)
+	id, err := g.groupService.Create(c.Request().Context(), *payload)
 	if err != nil {
 		return newErrorResponse(err)
 	}
@@ -68,7 +77,7 @@ func (g *groupsController) postCreateGroup(c echo.Context) error {
 // @Failure      500      {object}  echo.HTTPError
 // @Router       /groups [get]
 func (g *groupsController) getGroups(c echo.Context) error {
-	groups, err := g.service.GetAll(c.Request().Context())
+	groups, err := g.groupService.GetAll(c.Request().Context())
 	if err != nil {
 		return newErrorResponse(err)
 	}
@@ -83,7 +92,7 @@ func (g *groupsController) getGroups(c echo.Context) error {
 // @Description  Get group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id   path      string  true  "group ID"
+// @Param        id       path      string                  true  "group ID"
 // @Success      200  {object}  groupResponse
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -91,7 +100,7 @@ func (g *groupsController) getGroups(c echo.Context) error {
 func (g *groupsController) getGroupByID(c echo.Context) error {
 	id := c.Param("id")
 
-	group, err := g.service.GetByID(c.Request().Context(), id)
+	group, err := g.groupService.GetByID(c.Request().Context(), id)
 
 	if err != nil {
 		return newErrorResponse(err)
@@ -109,6 +118,7 @@ func (g *groupsController) getGroupByID(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        default  body  payload.UpdateGroup  true  "request body"
+// @Param        id       path  string               true  "group ID"
 // @Success      204
 // @Failure      400      {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -123,7 +133,7 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 		return newErrorResponse(service.ErrInvalidPayload)
 	}
 
-	err := g.service.Update(c.Request().Context(), id, *payload)
+	err := g.groupService.Update(c.Request().Context(), id, *payload)
 	if err != nil {
 		return newErrorResponse(err)
 	}
@@ -144,7 +154,7 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 func (g *groupsController) deleteGroupByID(c echo.Context) error {
 	id := c.Param("id")
 
-	err := g.service.Delete(c.Request().Context(), id)
+	err := g.groupService.Delete(c.Request().Context(), id)
 
 	if err != nil {
 		return newErrorResponse(err)
@@ -166,13 +176,45 @@ func (g *groupsController) deleteGroupByID(c echo.Context) error {
 func (g *groupsController) getGenerateQRCode(c echo.Context) error {
 	id := c.Param("id")
 
-	file, err := g.service.GenerateQRCode(c.Request().Context(), id)
+	file, err := g.groupService.GenerateQRCode(c.Request().Context(), id)
 
 	if err != nil {
 		return newErrorResponse(err)
 	}
 
 	return c.Blob(http.StatusOK, "image/png", file)
+}
+
+// postCreateProperty godoc
+// @Summary      Add a Property
+// @Description  Add a Property
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        default  body      payload.CreateProperty  true  "request body"
+// @Param        id   path      string  true  "group ID"
+// @Success      201      {object}  createPropertyResponse
+// @Failure      400  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id}/properties [post]
+func (g *groupsController) postCreateProperty(c echo.Context) error {
+	groupID := c.Param("id")
+
+	payload := new(payload.CreateProperty)
+	if err := c.Bind(payload); err != nil {
+		return newErrorResponse(service.ErrInvalidPayload)
+	}
+
+	id, err := g.propertyService.Create(c.Request().Context(), groupID, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	idResponse := map[string]any{"id": id}
+	response := model.NewResponse("success", "property successfully created", idResponse)
+	return c.JSON(http.StatusCreated, response)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
@@ -206,4 +248,11 @@ type groupResponse struct {
 
 type groupData struct {
 	Group response.Group `json:"group"`
+}
+
+// createPropertyResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
+type createPropertyResponse struct {
+	Status  string `json:"status" extensions:"x-order=0"`
+	Message string `json:"message" extensions:"x-order=1"`
+	Data    idData `json:"data" extensions:"x-order=2"`
 }
