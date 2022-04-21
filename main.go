@@ -11,10 +11,12 @@ import (
 	dr "github.com/erikrios/reog-apps-apis/repository/address"
 	ar "github.com/erikrios/reog-apps-apis/repository/admin"
 	gr "github.com/erikrios/reog-apps-apis/repository/group"
+	pr "github.com/erikrios/reog-apps-apis/repository/property"
 	vr "github.com/erikrios/reog-apps-apis/repository/village"
 	ds "github.com/erikrios/reog-apps-apis/service/address"
 	as "github.com/erikrios/reog-apps-apis/service/admin"
 	gs "github.com/erikrios/reog-apps-apis/service/group"
+	ps "github.com/erikrios/reog-apps-apis/service/property"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
 	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
@@ -63,13 +65,15 @@ func main() {
 	groupRepository := gr.NewGroupRepositoryImpl(db)
 	villageRepository := vr.NewVillageRepositoryImpl()
 	addressRepository := dr.NewAddressRepositoryImpl(db)
+	propertyRepository := pr.NewPropertyRepositoryImpl(db)
 
 	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
 	groupService := gs.NewGroupServiceImpl(groupRepository, villageRepository, idGenerator, qrCodeGenerator)
 	addressService := ds.NewAddressServiceImpl(addressRepository, villageRepository)
+	propertyService := ps.NewPropertyServiceImpl(propertyRepository, groupRepository, idGenerator, qrCodeGenerator)
 
 	adminsController := controller.NewAdminsController(adminService)
-	groupsController := controller.NewGroupsController(groupService)
+	groupsController := controller.NewGroupsController(groupService, propertyService)
 	addressesController := controller.NewAddressController(addressService)
 
 	e := echo.New()
