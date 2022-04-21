@@ -8,9 +8,11 @@ import (
 	"github.com/erikrios/reog-apps-apis/controller"
 	_ "github.com/erikrios/reog-apps-apis/docs"
 	"github.com/erikrios/reog-apps-apis/middleware"
+	dr "github.com/erikrios/reog-apps-apis/repository/address"
 	ar "github.com/erikrios/reog-apps-apis/repository/admin"
 	gr "github.com/erikrios/reog-apps-apis/repository/group"
 	vr "github.com/erikrios/reog-apps-apis/repository/village"
+	ds "github.com/erikrios/reog-apps-apis/service/address"
 	as "github.com/erikrios/reog-apps-apis/service/admin"
 	gs "github.com/erikrios/reog-apps-apis/service/group"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
@@ -60,12 +62,15 @@ func main() {
 	adminRepository := ar.NewAdminRepositoryImpl(db)
 	groupRepository := gr.NewGroupRepositoryImpl(db)
 	villageRepository := vr.NewVillageRepositoryImpl()
+	addressRepository := dr.NewAddressRepositoryImpl(db)
 
 	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
 	groupService := gs.NewGroupServiceImpl(groupRepository, villageRepository, idGenerator, qrCodeGenerator)
+	addressService := ds.NewAddressServiceImpl(addressRepository, villageRepository)
 
 	adminsController := controller.NewAdminsController(adminService)
 	groupsController := controller.NewGroupsController(groupService)
+	addressesController := controller.NewAddressController(addressService)
 
 	e := echo.New()
 
@@ -86,6 +91,7 @@ func main() {
 	g := e.Group("/api/v1")
 	adminsController.Route(g)
 	groupsController.Route(g)
+	addressesController.Route(g)
 
 	e.Logger.Fatal(e.Start(port))
 }
