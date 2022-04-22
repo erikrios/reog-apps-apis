@@ -36,6 +36,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.DELETE("/:id", g.deleteGroupByID)
 	group.GET("/:id/generate", g.getGenerateQRCode)
 	group.POST("/:id/properties", g.postCreateProperty)
+	group.PUT("/:id/properties/:propertyID", g.putUpdateProperty)
 }
 
 // postCreateGroup godoc
@@ -146,7 +147,7 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 // @Description  Delete group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id   path      string  true  "group ID"
+// @Param        id          path  string                  true  "group ID"
 // @Success      204
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -215,6 +216,35 @@ func (g *groupsController) postCreateProperty(c echo.Context) error {
 	idResponse := map[string]any{"id": id}
 	response := model.NewResponse("success", "property successfully created", idResponse)
 	return c.JSON(http.StatusCreated, response)
+}
+
+// putUpdateProperty godoc
+// @Summary      Update a Property
+// @Description  Update a Property
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        default     body  payload.UpdateProperty  true  "request body"
+// @Param        id   path      string  true  "group ID"
+// @Param        propertyID  path  string                  true  "property ID"
+// @Success      204
+// @Failure      400  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id}/properties/{propertyID} [put]
+func (g *groupsController) putUpdateProperty(c echo.Context) error {
+	propertyID := c.Param("propertyID")
+
+	payload := new(payload.UpdateProperty)
+	if err := c.Bind(payload); err != nil {
+		return newErrorResponse(service.ErrInvalidPayload)
+	}
+
+	if err := g.propertyService.Update(c.Request().Context(), propertyID, *payload); err != nil {
+		return newErrorResponse(err)
+	}
+	return c.NoContent(http.StatusNoContent)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
