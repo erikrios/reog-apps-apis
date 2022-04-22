@@ -92,7 +92,7 @@ func (p *propertyServiceImpl) Delete(ctx context.Context, id string) (err error)
 	return
 }
 
-func (p *propertyServiceImpl) GeterateQRCode(ctx context.Context, id string) (file []byte, err error) {
+func (p *propertyServiceImpl) GenerateQRCode(ctx context.Context, id string) (file []byte, err error) {
 	file, genErr := p.qrCodeGenerator.GenerateQRCode(id, qrcode.Medium, 2048)
 	if genErr != nil {
 		err = service.MapError(genErr)
