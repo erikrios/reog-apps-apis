@@ -38,6 +38,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.POST("/:id/properties", g.postCreateProperty)
 	group.PUT("/:id/properties/:propertyID", g.putUpdateProperty)
 	group.DELETE("/:id/properties/:propertyID", g.deleteProperty)
+	group.GET("/:id/properties/:propertyID/generate", g.getGeneratePropertyQRCode)
 }
 
 // postCreateGroup godoc
@@ -94,10 +95,10 @@ func (g *groupsController) getGroups(c echo.Context) error {
 // @Description  Get group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id       path      string                  true  "group ID"
+// @Param        id          path  string                  true  "group ID"
 // @Success      200  {object}  groupResponse
-// @Failure      404  {object}  echo.HTTPError
-// @Failure      500  {object}  echo.HTTPError
+// @Failure      404         {object}  echo.HTTPError
+// @Failure      500         {object}  echo.HTTPError
 // @Router       /groups/{id} [get]
 func (g *groupsController) getGroupByID(c echo.Context) error {
 	id := c.Param("id")
@@ -148,7 +149,7 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 // @Description  Delete group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id          path  string                  true  "group ID"
+// @Param        id          path  string  true  "group ID"
 // @Success      204
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -170,8 +171,8 @@ func (g *groupsController) deleteGroupByID(c echo.Context) error {
 // @Description  Generate QR Code
 // @Tags         groups
 // @Produce      image/png
-// @Param        id  path  string  true  "group ID"
-// @Success      200  {file}    binary
+// @Param        id          path      string  true  "group ID"
+// @Success      200         {file}    binary
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id}/generate [get]
@@ -194,7 +195,7 @@ func (g *groupsController) getGenerateQRCode(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        default  body      payload.CreateProperty  true  "request body"
-// @Param        id          path  string  true  "group ID"
+// @Param        id       path      string                  true  "group ID"
 // @Success      201      {object}  createPropertyResponse
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -255,7 +256,7 @@ func (g *groupsController) putUpdateProperty(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "group ID"
-// @Param        propertyID  path  string                  true  "property ID"
+// @Param        propertyID  path      string  true  "property ID"
 // @Success      204
 // @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
@@ -268,6 +269,29 @@ func (g *groupsController) deleteProperty(c echo.Context) error {
 		return newErrorResponse(err)
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+// getGeneratePropertyQRCode godoc
+// @Summary      Generate Property QR Code
+// @Description  Generate Property QR Code
+// @Tags         groups
+// @Produce      image/png
+// @Param        id  path  string  true  "group ID"
+// @Param        propertyID  path  string                  true  "property ID"
+// @Success      200  {file}    binary
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id}/properties/{propertyID}/generate [get]
+func (g *groupsController) getGeneratePropertyQRCode(c echo.Context) error {
+	propertyID := c.Param("propertyID")
+
+	file, err := g.propertyService.GenerateQRCode(c.Request().Context(), propertyID)
+
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.Blob(http.StatusOK, "image/png", file)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
