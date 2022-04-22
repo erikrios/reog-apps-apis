@@ -562,6 +562,41 @@ paths:
       tags:
       - groups
   /groups/{id}/properties/{propertyID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Property
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: property ID
+        in: path
+        name: propertyID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Delete a Property
+      tags:
+      - groups
     put:
       consumes:
       - application/json
