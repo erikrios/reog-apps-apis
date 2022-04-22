@@ -37,6 +37,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.GET("/:id/generate", g.getGenerateQRCode)
 	group.POST("/:id/properties", g.postCreateProperty)
 	group.PUT("/:id/properties/:propertyID", g.putUpdateProperty)
+	group.DELETE("/:id/properties/:propertyID", g.deleteProperty)
 }
 
 // postCreateGroup godoc
@@ -193,7 +194,7 @@ func (g *groupsController) getGenerateQRCode(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        default  body      payload.CreateProperty  true  "request body"
-// @Param        id   path      string  true  "group ID"
+// @Param        id          path  string  true  "group ID"
 // @Success      201      {object}  createPropertyResponse
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -226,7 +227,7 @@ func (g *groupsController) postCreateProperty(c echo.Context) error {
 // @Produce      json
 // @Param        default     body  payload.UpdateProperty  true  "request body"
 // @Param        id   path      string  true  "group ID"
-// @Param        propertyID  path  string                  true  "property ID"
+// @Param        propertyID  path  string  true  "property ID"
 // @Success      204
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -242,6 +243,28 @@ func (g *groupsController) putUpdateProperty(c echo.Context) error {
 	}
 
 	if err := g.propertyService.Update(c.Request().Context(), propertyID, *payload); err != nil {
+		return newErrorResponse(err)
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+// deleteProperty godoc
+// @Summary      Delete a Property
+// @Description  Delete a Property
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "group ID"
+// @Param        propertyID  path  string                  true  "property ID"
+// @Success      204
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/{id}/properties/{propertyID} [delete]
+func (g *groupsController) deleteProperty(c echo.Context) error {
+	propertyID := c.Param("propertyID")
+
+	if err := g.propertyService.Delete(c.Request().Context(), propertyID); err != nil {
 		return newErrorResponse(err)
 	}
 	return c.NoContent(http.StatusNoContent)
