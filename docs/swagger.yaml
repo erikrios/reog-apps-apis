@@ -642,4 +642,36 @@ paths:
       summary: Update a Property
       tags:
       - groups
+  /groups/{id}/properties/{propertyID}/generate:
+    get:
+      description: Generate Property QR Code
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: property ID
+        in: path
+        name: propertyID
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Generate Property QR Code
+      tags:
+      - groups
 swagger: "2.0"
