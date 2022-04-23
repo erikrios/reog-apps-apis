@@ -41,7 +41,7 @@ import (
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading .env file: %s\n", err.Error())
+		log.Printf("Error loading .env file: %s\n", err.Error())
 	}
 
 	db, err := config.NewPostgreSQLDatabase()
