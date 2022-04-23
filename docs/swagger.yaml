@@ -268,42 +268,6 @@ info:
   title: Reog Apps API
   version: "1.0"
 paths:
-  /addresses/{id}:
-    put:
-      consumes:
-      - application/json
-      description: Update an address
-      parameters:
-      - description: request body
-        in: body
-        name: default
-        required: true
-        schema:
-          $ref: '#/definitions/payload.UpdateAddress'
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/echo.HTTPError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/echo.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/echo.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/echo.HTTPError'
-      summary: Update an Address
-      tags:
-      - addresses
   /admins:
     post:
       consumes:
@@ -672,6 +636,42 @@ paths:
           schema:
             $ref: '#/definitions/echo.HTTPError'
       summary: Generate Property QR Code
+      tags:
+      - groups
+  /groups/addresses/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an address
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateAddress'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update an Address
       tags:
       - groups
 swagger: "2.0"
