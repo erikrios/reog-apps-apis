@@ -73,8 +73,7 @@ func main() {
 	propertyService := ps.NewPropertyServiceImpl(propertyRepository, groupRepository, idGenerator, qrCodeGenerator)
 
 	adminsController := controller.NewAdminsController(adminService)
-	groupsController := controller.NewGroupsController(groupService, propertyService)
-	addressesController := controller.NewAddressController(addressService)
+	groupsController := controller.NewGroupsController(groupService, propertyService, addressService)
 
 	e := echo.New()
 
@@ -95,7 +94,6 @@ func main() {
 	g := e.Group("/api/v1")
 	adminsController.Route(g)
 	groupsController.Route(g)
-	addressesController.Route(g)
 
 	e.Logger.Fatal(e.Start(port))
 }
