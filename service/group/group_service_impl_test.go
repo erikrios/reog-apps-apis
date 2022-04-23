@@ -449,6 +449,7 @@ func TestGetByID(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			testCase.mockBehaviours()
+
 			gotGroup, gotErr := groupService.GetByID(context.Background(), testCase.inputID)
 
 			if testCase.expectedError != nil {
