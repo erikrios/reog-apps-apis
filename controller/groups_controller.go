@@ -7,6 +7,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/model/payload"
 	"github.com/erikrios/reog-apps-apis/model/response"
 	"github.com/erikrios/reog-apps-apis/service"
+	"github.com/erikrios/reog-apps-apis/service/address"
 	"github.com/erikrios/reog-apps-apis/service/group"
 	"github.com/erikrios/reog-apps-apis/service/property"
 	"github.com/labstack/echo/v4"
@@ -15,15 +16,18 @@ import (
 type groupsController struct {
 	groupService    group.GroupService
 	propertyService property.PropertyService
+	addressService  address.AddressService
 }
 
 func NewGroupsController(
 	groupService group.GroupService,
 	propertyService property.PropertyService,
+	addressService address.AddressService,
 ) *groupsController {
 	return &groupsController{
 		groupService:    groupService,
 		propertyService: propertyService,
+		addressService:  addressService,
 	}
 }
 
@@ -35,6 +39,7 @@ func (g *groupsController) Route(e *echo.Group) {
 	group.PUT("/:id", g.putUpdateGroupByID)
 	group.DELETE("/:id", g.deleteGroupByID)
 	group.GET("/:id/generate", g.getGenerateQRCode)
+	group.PUT("/addresses/:id", g.putUpdateAddress)
 	group.POST("/:id/properties", g.postCreateProperty)
 	group.PUT("/:id/properties/:propertyID", g.putUpdateProperty)
 	group.DELETE("/:id/properties/:propertyID", g.deleteProperty)
@@ -149,7 +154,7 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 // @Description  Delete group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id          path  string  true  "group ID"
+// @Param        id          path      string  true  "group ID"
 // @Success      204
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -171,7 +176,7 @@ func (g *groupsController) deleteGroupByID(c echo.Context) error {
 // @Description  Generate QR Code
 // @Tags         groups
 // @Produce      image/png
-// @Param        id          path      string  true  "group ID"
+// @Param        id          path  string  true  "group ID"
 // @Success      200         {file}    binary
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
@@ -186,6 +191,35 @@ func (g *groupsController) getGenerateQRCode(c echo.Context) error {
 	}
 
 	return c.Blob(http.StatusOK, "image/png", file)
+}
+
+// putUpdateAddress godoc
+// @Summary      Update an Address
+// @Description  Update an address
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        default  body  payload.UpdateAddress  true  "request body"
+// @Success      204
+// @Failure      400  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /groups/addresses/{id} [put]
+func (g *groupsController) putUpdateAddress(c echo.Context) error {
+	id := c.Param("id")
+
+	payload := new(payload.UpdateAddress)
+	if err := c.Bind(payload); err != nil {
+		return newErrorResponse(service.ErrInvalidPayload)
+	}
+
+	err := g.addressService.Update(c.Request().Context(), id, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // postCreateProperty godoc
@@ -228,7 +262,7 @@ func (g *groupsController) postCreateProperty(c echo.Context) error {
 // @Produce      json
 // @Param        default     body  payload.UpdateProperty  true  "request body"
 // @Param        id   path      string  true  "group ID"
-// @Param        propertyID  path  string  true  "property ID"
+// @Param        propertyID  path      string  true  "property ID"
 // @Success      204
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -256,7 +290,7 @@ func (g *groupsController) putUpdateProperty(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      string  true  "group ID"
-// @Param        propertyID  path      string  true  "property ID"
+// @Param        propertyID  path  string  true  "property ID"
 // @Success      204
 // @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
