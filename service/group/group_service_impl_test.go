@@ -8,6 +8,7 @@ import (
 
 	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/model/payload"
+	"github.com/erikrios/reog-apps-apis/model/response"
 	"github.com/erikrios/reog-apps-apis/repository"
 	mgr "github.com/erikrios/reog-apps-apis/repository/group/mocks"
 	mvr "github.com/erikrios/reog-apps-apis/repository/village/mocks"
@@ -192,6 +193,124 @@ func TestCreate(t *testing.T) {
 			} else {
 				assert.NoError(t, gotErr)
 				assert.Equal(t, testCase.expectedID, gotID)
+			}
+		})
+	}
+}
+
+func TestGetAll(t *testing.T) {
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockVillageRepo := &mvr.VillageRepository{}
+	mockIDGen := &mig.IDGenerator{}
+	mockQRGen := &mqg.QRCodeGenerator{}
+
+	var groupService GroupService = NewGroupServiceImpl(
+		mockGroupRepo,
+		mockVillageRepo,
+		mockIDGen,
+		mockQRGen,
+	)
+
+	testCases := []struct {
+		name           string
+		expectedGroups []response.Group
+		expectedError  error
+		mockBehaviours func()
+	}{
+		{
+			name:           "it should return service.ErrRepository error, when group repository return an error",
+			expectedGroups: []response.Group{},
+			expectedError:  service.ErrRepository,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"FindAll",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+				).Return(
+					func(ctx context.Context) []entity.Group {
+						return []entity.Group{}
+					},
+					func(ctx context.Context) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name: "it should return a valid groups, when no error is returned",
+			expectedGroups: []response.Group{
+				{
+					ID:     "g-Nzo",
+					Name:   "Paguyuban Reog",
+					Leader: "Erik Rio Setiawan",
+					Address: response.Address{
+						ID:           "g-Nzo",
+						Address:      "RT 05 RW 01 Dukuh Tengah",
+						VillageID:    "3502030007",
+						VillageName:  "Pager",
+						DistrictID:   "3502030",
+						DistrictName: "Bungkal",
+						RegencyID:    "3502",
+						RegencyName:  "Kabupaten Ponorogo",
+						ProvinceID:   "35",
+						ProvinceName: "Jawa Timur",
+					},
+					Properties: []response.Property{
+						{
+							ID:          "p-YIhpPgp",
+							Name:        "Dadak Merak",
+							Description: "Ini adalah deskripsi dari dadak merak",
+							Amount:      1,
+						},
+					},
+				},
+			},
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockGroupRepo.On("FindAll", mock.AnythingOfType(fmt.Sprintf("%T", context.Background()))).Return(func(ctx context.Context) []entity.Group {
+					return []entity.Group{
+						{
+							ID:     "g-Nzo",
+							Name:   "Paguyuban Reog",
+							Leader: "Erik Rio Setiawan",
+							Address: entity.Address{
+								ID:           "g-Nzo",
+								Address:      "RT 05 RW 01 Dukuh Tengah",
+								VillageID:    "3502030007",
+								VillageName:  "Pager",
+								DistrictID:   "3502030",
+								DistrictName: "Bungkal",
+								RegencyID:    "3502",
+								RegencyName:  "Kabupaten Ponorogo",
+								ProvinceID:   "35",
+								ProvinceName: "Jawa Timur",
+							},
+							Properties: []entity.Property{
+								{
+									ID:          "p-YIhpPgp",
+									Name:        "Dadak Merak",
+									Description: "Ini adalah deskripsi dari dadak merak",
+									Amount:      1,
+								},
+							},
+						},
+					}
+				}, func(ctx context.Context) error {
+					return nil
+				}).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+			gotGroups, gotErr := groupService.GetAll(context.Background())
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+				assert.Equal(t, testCase.expectedGroups, gotGroups)
 			}
 		})
 	}
