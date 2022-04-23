@@ -461,3 +461,112 @@ func TestGetByID(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockVillageRepo := &mvr.VillageRepository{}
+	mockIDGen := &mig.IDGenerator{}
+	mockQRGen := &mqg.QRCodeGenerator{}
+
+	var groupService GroupService = NewGroupServiceImpl(
+		mockGroupRepo,
+		mockVillageRepo,
+		mockIDGen,
+		mockQRGen,
+	)
+
+	testCases := []struct {
+		name             string
+		inputID          string
+		inputUpdateGroup payload.UpdateGroup
+		expectedError    error
+		mockBehaviours   func()
+	}{
+		{
+			name:    "it should return service.ErrInvalidPayload error, when payload is invalid",
+			inputID: "g-xyz",
+			inputUpdateGroup: payload.UpdateGroup{
+				Name:   "Paguyuban Reog",
+				Leader: "E",
+			},
+			expectedError:  service.ErrInvalidPayload,
+			mockBehaviours: func() {},
+		},
+		{
+			name:    "it should return service.ErrDataNotFound error, when repository return an error",
+			inputID: "g-xyz",
+			inputUpdateGroup: payload.UpdateGroup{
+				Name:   "Paguyuban Reog",
+				Leader: "Erik R",
+			},
+			expectedError: service.ErrDataNotFound,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Group{})),
+				).Return(
+					func(ctx context.Context, id string, group entity.Group) error {
+						return repository.ErrRecordNotFound
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return service.ErrRepository error, when group repository return an error",
+			inputID: "g-xyz",
+			inputUpdateGroup: payload.UpdateGroup{
+				Name:   "Paguyuban Reog",
+				Leader: "Erik R",
+			},
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Group{})),
+				).Return(
+					func(ctx context.Context, id string, group entity.Group) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return nil error, when no error is returned",
+			inputID: "g-xyz",
+			inputUpdateGroup: payload.UpdateGroup{
+				Name:   "Paguyuban Reog",
+				Leader: "Erik R",
+			},
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Group{})),
+				).Return(
+					func(ctx context.Context, id string, group entity.Group) error {
+						return nil
+					},
+				).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+			gotErr := groupService.Update(context.Background(), testCase.inputID, testCase.inputUpdateGroup)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+			}
+		})
+	}
+}
