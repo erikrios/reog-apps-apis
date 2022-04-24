@@ -215,3 +215,117 @@ func TestCreate(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	mockPropertyRepo := &mpr.PropertyRepository{}
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockIDGen := &mig.IDGenerator{}
+	mockQRGen := &mqg.QRCodeGenerator{}
+
+	var propertyService PropertyService = NewPropertyServiceImpl(
+		mockPropertyRepo,
+		mockGroupRepo,
+		mockIDGen,
+		mockQRGen,
+	)
+
+	testCases := []struct {
+		name                string
+		inputID             string
+		inputUpdateProperty payload.UpdateProperty
+		expectedError       error
+		mockBehaviours      func()
+	}{
+		{
+			name:    "it should return service.ErrInvalidPayload error, when payload is invalid",
+			inputID: "p-Gx9LkMn",
+			inputUpdateProperty: payload.UpdateProperty{
+				Name:        "D",
+				Description: "Ini Deskripsi Dadak Merak",
+				Amount:      1,
+			},
+			expectedError:  service.ErrInvalidPayload,
+			mockBehaviours: func() {},
+		},
+		{
+			name:    "it should return service.ErrDataNotFound error, when property repository return an error",
+			inputID: "p-Gx9LkMn",
+			inputUpdateProperty: payload.UpdateProperty{
+				Name:        "Dadak Merak",
+				Description: "Ini Deskripsi Dadak Merak",
+				Amount:      1,
+			},
+			expectedError: service.ErrDataNotFound,
+			mockBehaviours: func() {
+				mockPropertyRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Property{})),
+				).Return(
+					func(ctx context.Context, id string, p entity.Property) error {
+						return repository.ErrRecordNotFound
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return service.ErrRepository error, when property repository return an error",
+			inputID: "p-Gx9LkMn",
+			inputUpdateProperty: payload.UpdateProperty{
+				Name:        "Dadak Merak",
+				Description: "Ini Deskripsi Dadak Merak",
+				Amount:      1,
+			},
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockPropertyRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Property{})),
+				).Return(
+					func(ctx context.Context, id string, p entity.Property) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return nil error, when no error is returned",
+			inputID: "p-Gx9LkMn",
+			inputUpdateProperty: payload.UpdateProperty{
+				Name:        "Dadak Merak",
+				Description: "Ini Deskripsi Dadak Merak",
+				Amount:      1,
+			},
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockPropertyRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.Property{})),
+				).Return(
+					func(ctx context.Context, id string, p entity.Property) error {
+						return nil
+					},
+				).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+
+			gotErr := propertyService.Update(context.Background(), testCase.inputID, testCase.inputUpdateProperty)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+			}
+		})
+	}
+}
