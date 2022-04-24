@@ -14,6 +14,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/service"
 	mig "github.com/erikrios/reog-apps-apis/utils/generator/mocks"
 	mqg "github.com/erikrios/reog-apps-apis/utils/generator/mocks"
+	"github.com/skip2/go-qrcode"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -409,6 +410,86 @@ func TestDelete(t *testing.T) {
 				assert.ErrorIs(t, gotErr, testCase.expectedError)
 			} else {
 				assert.NoError(t, gotErr)
+			}
+		})
+	}
+}
+
+func TestGenerateQRCode(t *testing.T) {
+	mockPropertyRepo := &mpr.PropertyRepository{}
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockIDGen := &mig.IDGenerator{}
+	mockQRGen := &mqg.QRCodeGenerator{}
+
+	var propertyService PropertyService = NewPropertyServiceImpl(
+		mockPropertyRepo,
+		mockGroupRepo,
+		mockIDGen,
+		mockQRGen,
+	)
+
+	testCases := []struct {
+		name           string
+		inputID        string
+		expectedFile   []byte
+		expectedError  error
+		mockBehaviours func()
+	}{
+		{
+			name:          "it should return service.ErrRepository error, when QR Code Generator return an error",
+			inputID:       "g-xyz",
+			expectedFile:  []byte{},
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockQRGen.On(
+					"GenerateQRCode",
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", qrcode.Medium)),
+					mock.AnythingOfType(fmt.Sprintf("%T", 2048)),
+				).Return(
+					func(id string, level qrcode.RecoveryLevel, size int) []byte {
+						return []byte{}
+					},
+					func(id string, level qrcode.RecoveryLevel, size int) error {
+						return errors.New("error generate qrcode")
+					},
+				).Once()
+			},
+		},
+		{
+			name:          "it should return a valid file, when no error is returned",
+			inputID:       "g-xyz",
+			expectedFile:  []byte{1},
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockQRGen.On(
+					"GenerateQRCode",
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", qrcode.Medium)),
+					mock.AnythingOfType(fmt.Sprintf("%T", 2048)),
+				).Return(
+					func(id string, level qrcode.RecoveryLevel, size int) []byte {
+						return []byte{1}
+					},
+					func(id string, level qrcode.RecoveryLevel, size int) error {
+						return nil
+					},
+				).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+
+			gotFile, gotErr := propertyService.GenerateQRCode(context.Background(), testCase.inputID)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+				assert.ElementsMatch(t, testCase.expectedFile, gotFile)
 			}
 		})
 	}
