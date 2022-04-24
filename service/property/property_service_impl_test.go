@@ -203,6 +203,7 @@ func TestCreate(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			testCase.mockBehaviours()
+
 			gotID, gotErr := propertyService.Create(context.Background(), testCase.inputGroupID, testCase.inputCreateProperty)
 
 			if testCase.expectedError != nil {
