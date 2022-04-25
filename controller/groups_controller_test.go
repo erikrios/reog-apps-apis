@@ -708,3 +708,114 @@ func TestDeleteGroupByID(t *testing.T) {
 		}
 	})
 }
+
+func TestGetGenerateQRCode(t *testing.T) {
+	mockGroupService := &mgs.GroupService{}
+	mockPropertyService := &mps.PropertyService{}
+	mockAddressService := &mas.AddressService{}
+
+	t.Run("success scenario", func(t *testing.T) {
+		mockGroupService.On(
+			"GenerateQRCode",
+			mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+			mock.AnythingOfType(fmt.Sprintf("%T", "")),
+		).Return(
+			func(ctx context.Context, id string) []byte {
+				return []byte{1}
+			},
+			func(ctx context.Context, id string) error {
+				return nil
+			},
+		).Once()
+
+		t.Run("it should return 200 status code with valid response, when there is no error", func(t *testing.T) {
+			controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetPath("/:id/generate")
+			c.SetParamNames("id")
+			c.SetParamValues("g-xyz")
+
+			if assert.NoError(t, controller.getGenerateQRCode(c)) {
+				assert.Equal(t, http.StatusOK, rec.Code)
+			}
+		})
+	})
+
+	t.Run("failed scenario", func(t *testing.T) {
+		testCases := []struct {
+			name                 string
+			expectedStatusCode   int
+			expectedErrorMessage string
+			mockBehaviour        func()
+		}{
+			{
+				name:                 "it should return 404 status code, when group ID not found",
+				expectedStatusCode:   http.StatusNotFound,
+				expectedErrorMessage: "Resource with given ID not found.",
+				mockBehaviour: func() {
+					mockGroupService.On(
+						"GenerateQRCode",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) []byte {
+							return []byte{}
+						},
+						func(ctx context.Context, id string) error {
+							return service.ErrDataNotFound
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 500 status code, when error happened",
+				expectedStatusCode:   http.StatusInternalServerError,
+				expectedErrorMessage: "Something went wrong.",
+				mockBehaviour: func() {
+					mockGroupService.On(
+						"GenerateQRCode",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) []byte {
+							return []byte{}
+						},
+						func(ctx context.Context, id string) error {
+							return service.ErrRepository
+						},
+					).Once()
+				},
+			},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.name, func(t *testing.T) {
+				testCase.mockBehaviour()
+
+				controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+
+				e := echo.New()
+				req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
+				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+				c := e.NewContext(req, rec)
+				c.SetPath("/:id/generate")
+				c.SetParamNames("id")
+				c.SetParamValues("g-xyz")
+
+				gotError := controller.getGenerateQRCode(c)
+				if assert.Error(t, gotError) {
+					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
+						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
+						assert.Equal(t, testCase.expectedErrorMessage, echoHTTPError.Message)
+					}
+				}
+			})
+		}
+	})
+}
