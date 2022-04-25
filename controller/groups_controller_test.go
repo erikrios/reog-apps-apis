@@ -72,11 +72,10 @@ func TestPostCreateGroup(t *testing.T) {
 			assert.NoError(t, err)
 
 			e := echo.New()
-			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/groups", strings.NewReader(string(requestBody)))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			c.SetPath("/api/v1/groups")
 
 			if assert.NoError(t, controller.postCreateGroup(c)) {
 				assert.Equal(t, http.StatusCreated, rec.Code)
@@ -179,11 +178,10 @@ func TestPostCreateGroup(t *testing.T) {
 				assert.NoError(t, err)
 
 				e := echo.New()
-				req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+				req := httptest.NewRequest(http.MethodPost, "/api/v1/groups", strings.NewReader(string(requestBody)))
 				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 				rec := httptest.NewRecorder()
 				c := e.NewContext(req, rec)
-				c.SetPath("/api/v1/groups")
 
 				gotError := controller.postCreateGroup(c)
 				if assert.Error(t, gotError) {
@@ -246,15 +244,14 @@ func TestGetGroups(t *testing.T) {
 			},
 		).Once()
 
-		t.Run("it should return 201 status code with valid response, when there is no error", func(t *testing.T) {
+		t.Run("it should return 200 status code with valid response, when there is no error", func(t *testing.T) {
 			controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
 
 			e := echo.New()
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			c.SetPath("/api/v1/groups")
 
 			if assert.NoError(t, controller.getGroups(c)) {
 				assert.Equal(t, http.StatusOK, rec.Code)
@@ -305,13 +302,160 @@ func TestGetGroups(t *testing.T) {
 				controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
 
 				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
+				req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
 				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 				rec := httptest.NewRecorder()
 				c := e.NewContext(req, rec)
-				c.SetPath("/api/v1/groups")
 
 				gotError := controller.getGroups(c)
+				if assert.Error(t, gotError) {
+					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
+						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
+						assert.Equal(t, testCase.expectedErrorMessage, echoHTTPError.Message)
+					}
+				}
+			})
+		}
+	})
+}
+
+func TestGetGroupByID(t *testing.T) {
+	mockGroupService := &mgs.GroupService{}
+	mockPropertyService := &mps.PropertyService{}
+	mockAddressService := &mas.AddressService{}
+
+	t.Run("success scenario", func(t *testing.T) {
+		dummyGroup := response.Group{
+			ID:     "g-xyz",
+			Name:   "Paguyuban Reog",
+			Leader: "Erik Rio S",
+			Address: response.Address{
+				ID:           "g-xyz",
+				Address:      "RT 01 RW 01 Dukuh Bibis",
+				VillageID:    "350211189",
+				VillageName:  "Pager",
+				DistrictID:   "350211",
+				DistrictName: "Bungkal",
+				RegencyID:    "3502",
+				RegencyName:  "Kabupaten Ponorogo",
+				ProvinceID:   "35",
+				ProvinceName: "Jawa Timur",
+			},
+			Properties: []response.Property{
+				{
+					ID:          "p-Ay8LmNI",
+					Name:        "Dadak Merak",
+					Description: "Ini adalah deskripsi dadak merak",
+					Amount:      1,
+				},
+			},
+		}
+
+		dummyGroupsResponse := map[string]any{"group": dummyGroup}
+		dummyResp := model.NewResponse("success", "successfully get group with id "+dummyGroup.ID, dummyGroupsResponse)
+
+		mockGroupService.On(
+			"GetByID",
+			mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+			mock.AnythingOfType(fmt.Sprintf("%T", "")),
+		).Return(
+			func(ctx context.Context, id string) response.Group {
+				return dummyGroup
+			},
+			func(ctx context.Context, id string) error {
+				return nil
+			},
+		).Once()
+
+		t.Run("it should return 200 status code with valid response, when there is no error", func(t *testing.T) {
+			controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetPath("/:id")
+			c.SetParamNames("id")
+			c.SetParamValues(dummyGroup.ID)
+
+			if assert.NoError(t, controller.getGroupByID(c)) {
+				assert.Equal(t, http.StatusOK, rec.Code)
+
+				body := rec.Body.String()
+
+				gotResponse := &model.Response[map[string]any]{}
+
+				if err := json.Unmarshal([]byte(body), &gotResponse); assert.NoError(t, err) {
+					reflect.DeepEqual(dummyResp, gotResponse)
+				}
+			}
+		})
+	})
+
+	t.Run("failed scenario", func(t *testing.T) {
+		testCases := []struct {
+			name                 string
+			expectedStatusCode   int
+			expectedErrorMessage string
+			mockBehaviour        func()
+		}{
+			{
+				name:                 "it should return 404 status code, when group ID not found",
+				expectedStatusCode:   http.StatusNotFound,
+				expectedErrorMessage: "Resource with given ID not found.",
+				mockBehaviour: func() {
+					mockGroupService.On(
+						"GetByID",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) response.Group {
+							return response.Group{}
+						},
+						func(ctx context.Context, id string) error {
+							return service.ErrDataNotFound
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 500 status code, when error happened",
+				expectedStatusCode:   http.StatusInternalServerError,
+				expectedErrorMessage: "Something went wrong.",
+				mockBehaviour: func() {
+					mockGroupService.On(
+						"GetByID",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) response.Group {
+							return response.Group{}
+						},
+						func(ctx context.Context, id string) error {
+							return service.ErrRepository
+						},
+					).Once()
+				},
+			},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.name, func(t *testing.T) {
+				testCase.mockBehaviour()
+
+				controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+
+				e := echo.New()
+				req := httptest.NewRequest(http.MethodGet, "/api/v1/groups", nil)
+				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+				c := e.NewContext(req, rec)
+				c.SetPath("/:id")
+				c.SetParamNames("id")
+				c.SetParamValues("g-xyz")
+
+				gotError := controller.getGroupByID(c)
 				if assert.Error(t, gotError) {
 					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
 						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
