@@ -1,0 +1,677 @@
+basePath: /api/v1
+definitions:
+  controller.createGroupResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.createPropertyResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.groupData:
+    properties:
+      group:
+        $ref: '#/definitions/response.Group'
+    type: object
+  controller.groupResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.groupData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.groupsData:
+    properties:
+      groups:
+        items:
+          $ref: '#/definitions/response.Group'
+        type: array
+    type: object
+  controller.groupsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.groupsData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.idData:
+    properties:
+      id:
+        type: string
+    type: object
+  controller.loginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.tokenData'
+        x-order: "2"
+      message:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "1"
+      status:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
+  controller.tokenData:
+    properties:
+      token:
+        type: string
+    type: object
+  echo.HTTPError:
+    properties:
+      message: {}
+    type: object
+  payload.CreateGroup:
+    properties:
+      address:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "2"
+      leader:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+      villageID:
+        maxLength: 20
+        minLength: 2
+        type: string
+        x-order: "3"
+    type: object
+  payload.CreateProperty:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+        x-order: "2"
+      description:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
+  payload.Credential:
+    properties:
+      password:
+        maxLength: 50
+        minLength: 2
+        type: string
+        x-order: "1"
+      username:
+        maxLength: 20
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
+  payload.UpdateAddress:
+    properties:
+      address:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "0"
+      villageID:
+        maxLength: 20
+        minLength: 2
+        type: string
+        x-order: "1"
+    type: object
+  payload.UpdateGroup:
+    properties:
+      leader:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
+  payload.UpdateProperty:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+        x-order: "2"
+      description:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "1"
+      name:
+        maxLength: 80
+        minLength: 2
+        type: string
+        x-order: "0"
+    type: object
+  response.Address:
+    properties:
+      address:
+        type: string
+        x-order: "1"
+      districtID:
+        type: string
+        x-order: "4"
+      districtName:
+        type: string
+        x-order: "5"
+      id:
+        type: string
+        x-order: "0"
+      provinceID:
+        type: string
+        x-order: "7"
+      provinceName:
+        type: string
+        x-order: "8"
+      regencyID:
+        type: string
+        x-order: "5"
+      regencyName:
+        type: string
+        x-order: "6"
+      villageID:
+        type: string
+        x-order: "2"
+      villageName:
+        type: string
+        x-order: "3"
+    type: object
+  response.Group:
+    properties:
+      address:
+        $ref: '#/definitions/response.Address'
+        x-order: "3"
+      id:
+        type: string
+        x-order: "0"
+      leader:
+        type: string
+        x-order: "2"
+      name:
+        type: string
+        x-order: "1"
+      properties:
+        items:
+          $ref: '#/definitions/response.Property'
+        type: array
+        x-order: "4"
+    type: object
+  response.Property:
+    properties:
+      amount:
+        type: integer
+        x-order: "3"
+      description:
+        type: string
+        x-order: "2"
+      id:
+        type: string
+        x-order: "0"
+      name:
+        type: string
+        x-order: "1"
+    type: object
+host: localhost
+info:
+  contact:
+    email: erikriosetiawan15@gmail.com
+    name: Erik Rio Setiawan
+    url: http://www.swagger.io/support
+  description: API for Reog Group in Ponorogo
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Reog Apps API
+  version: "1.0"
+paths:
+  /admins:
+    post:
+      consumes:
+      - application/json
+      description: Admin login
+      parameters:
+      - description: admin credentials
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.Credential'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Admin Login
+      tags:
+      - admins
+  /groups:
+    get:
+      description: Get Groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.groupsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get Groups
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new group
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateGroup'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Create a Group
+      tags:
+      - groups
+  /groups/{id}:
+    delete:
+      description: Delete group by ID
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Delete Group by ID
+      tags:
+      - groups
+    get:
+      description: Get group by ID
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.groupResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get Group by ID
+      tags:
+      - groups
+    put:
+      consumes:
+      - application/json
+      description: Update a group
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateGroup'
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update a Group
+      tags:
+      - groups
+  /groups/{id}/generate:
+    get:
+      description: Generate QR Code
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Generate QR Code
+      tags:
+      - groups
+  /groups/{id}/properties:
+    post:
+      consumes:
+      - application/json
+      description: Add a Property
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateProperty'
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createPropertyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Add a Property
+      tags:
+      - groups
+  /groups/{id}/properties/{propertyID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Property
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: property ID
+        in: path
+        name: propertyID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Delete a Property
+      tags:
+      - groups
+    put:
+      consumes:
+      - application/json
+      description: Update a Property
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateProperty'
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: property ID
+        in: path
+        name: propertyID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update a Property
+      tags:
+      - groups
+  /groups/{id}/properties/{propertyID}/generate:
+    get:
+      description: Generate Property QR Code
+      parameters:
+      - description: group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: property ID
+        in: path
+        name: propertyID
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Generate Property QR Code
+      tags:
+      - groups
+  /groups/addresses/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an address
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateAddress'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Update an Address
+      tags:
+      - groups
+swagger: "2.0"
