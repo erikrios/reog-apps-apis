@@ -959,3 +959,170 @@ func TestPutUpdateAddress(t *testing.T) {
 		}
 	})
 }
+
+func TestPostCreateProperty(t *testing.T) {
+	mockGroupService := &mgs.GroupService{}
+	mockPropertyService := &mps.PropertyService{}
+	mockAddressService := &mas.AddressService{}
+
+	t.Run("success scenario", func(t *testing.T) {
+		dummyReq := payload.CreateProperty{
+			Name:        "Dadak Merak",
+			Description: "Ini adalah deskripsi dadak merak",
+			Amount:      1,
+		}
+
+		dummyID := "p-xyzxyza"
+		dummyIDResponse := map[string]any{"id": dummyID}
+		dummyResp := model.NewResponse("success", "property successfully created", dummyIDResponse)
+
+		mockPropertyService.On(
+			"Create",
+			mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+			mock.AnythingOfType(fmt.Sprintf("%T", "")),
+			mock.AnythingOfType(fmt.Sprintf("%T", payload.CreateProperty{})),
+		).Return(
+			func(ctx context.Context, groupID string, p payload.CreateProperty) string {
+				return dummyID
+			},
+			func(ctx context.Context, groupID string, p payload.CreateProperty) error {
+				return nil
+			},
+		).Once()
+
+		t.Run("it should return 201 status code with valid response, when there is no error", func(t *testing.T) {
+			controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+			requestBody, err := json.Marshal(dummyReq)
+			assert.NoError(t, err)
+
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/groups", strings.NewReader(string(requestBody)))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetPath("/:id/properties")
+			c.SetParamNames("id")
+			c.SetParamValues("g-xyz")
+
+			if assert.NoError(t, controller.postCreateProperty(c)) {
+				assert.Equal(t, http.StatusCreated, rec.Code)
+
+				body := rec.Body.String()
+
+				gotResponse := make(map[string]any)
+
+				if err := json.Unmarshal([]byte(body), &gotResponse); assert.NoError(t, err) {
+					gotID := gotResponse["data"].(map[string]any)["id"].(string)
+					assert.Equal(t, dummyResp.Data["id"], gotID)
+				}
+			}
+		})
+	})
+
+	t.Run("failed scenario", func(t *testing.T) {
+		dummyReq := payload.CreateProperty{
+			Name:        "Dadak Merak",
+			Description: "Ini adalah deskripsi dadak merak",
+			Amount:      1,
+		}
+
+		testCases := []struct {
+			name                 string
+			inputPayload         payload.CreateProperty
+			expectedStatusCode   int
+			expectedErrorMessage string
+			mockBehaviour        func()
+		}{
+			{
+				name:                 "it should return 400 status code, when payload is invalid",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusBadRequest,
+				expectedErrorMessage: "Invalid payload. Please check the payload schema in the API Documentation.",
+				mockBehaviour: func() {
+					mockPropertyService.On(
+						"Create",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.CreateProperty{})),
+					).Return(
+						func(ctx context.Context, groupID string, p payload.CreateProperty) string {
+							return ""
+						},
+						func(ctx context.Context, groupID string, p payload.CreateProperty) error {
+							return service.ErrInvalidPayload
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 404 status code, when group ID not found",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusNotFound,
+				expectedErrorMessage: "Resource with given ID not found.",
+				mockBehaviour: func() {
+					mockPropertyService.On(
+						"Create",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.CreateProperty{})),
+					).Return(
+						func(ctx context.Context, groupID string, p payload.CreateProperty) string {
+							return ""
+						},
+						func(ctx context.Context, groupID string, p payload.CreateProperty) error {
+							return service.ErrDataNotFound
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 500 status code, when error happened",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusInternalServerError,
+				expectedErrorMessage: "Something went wrong.",
+				mockBehaviour: func() {
+					mockPropertyService.On(
+						"Create",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.CreateProperty{})),
+					).Return(
+						func(ctx context.Context, groupID string, p payload.CreateProperty) string {
+							return ""
+						},
+						func(ctx context.Context, groupID string, p payload.CreateProperty) error {
+							return service.ErrRepository
+						},
+					).Once()
+				},
+			},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.name, func(t *testing.T) {
+				testCase.mockBehaviour()
+
+				controller := NewGroupsController(mockGroupService, mockPropertyService, mockAddressService)
+				requestBody, err := json.Marshal(dummyReq)
+				assert.NoError(t, err)
+
+				e := echo.New()
+				req := httptest.NewRequest(http.MethodPost, "/api/v1/groups", strings.NewReader(string(requestBody)))
+				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+				c := e.NewContext(req, rec)
+				c.SetPath("/:id/properties")
+				c.SetParamNames("id")
+				c.SetParamValues("g-xyz")
+
+				gotError := controller.postCreateProperty(c)
+				if assert.Error(t, gotError) {
+					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
+						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
+						assert.Equal(t, testCase.expectedErrorMessage, echoHTTPError.Message)
+					}
+				}
+			})
+		}
+	})
+}
