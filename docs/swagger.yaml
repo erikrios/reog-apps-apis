@@ -254,7 +254,7 @@ definitions:
         type: string
         x-order: "1"
     type: object
-host: localhost
+host: localhost:3000
 info:
   contact:
     email: erikriosetiawan15@gmail.com
