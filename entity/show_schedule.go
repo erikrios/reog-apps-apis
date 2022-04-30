@@ -8,7 +8,7 @@ import (
 
 type ShowSchedule struct {
 	ID        string    `gorm:"type:char(9)"`
-	GroupID   string    `gorm:"type:char(5)"`
+	GroupID   string    `gorm:"type:char(5); not null"`
 	Place     string    `gorm:"not null"`
 	StartOn   time.Time `gorm:"not null"`
 	FinishOn  time.Time `gorm:"not null"`

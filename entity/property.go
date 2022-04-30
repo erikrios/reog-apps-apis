@@ -11,7 +11,7 @@ type Property struct {
 	Name        string `gorm:"not null;size:80"`
 	Description string `gorm:"not null"`
 	Amount      uint16 `gorm:"not null"`
-	GroupID     string `gorm:"type:char(5)"`
+	GroupID     string `gorm:"type:char(5);not null"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
