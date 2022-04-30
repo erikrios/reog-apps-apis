@@ -125,6 +125,32 @@ func (s *showScheduleServiceImpl) GetByID(ctx context.Context, id string) (respo
 }
 
 func (s *showScheduleServiceImpl) GetByGroupID(ctx context.Context, groupID string) (responses []response.ShowSchedule, err error) {
+	_, repoErr := s.groupRepository.FindByID(ctx, groupID)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	entities, repoErr := s.showScheduleRepository.FindByGroupID(ctx, groupID)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	responses = make([]response.ShowSchedule, 0)
+
+	for _, entity := range entities {
+		response := response.ShowSchedule{
+			ID:       entity.ID,
+			GroupID:  entity.GroupID,
+			Place:    entity.Place,
+			StartOn:  entity.StartOn.Format(time.RFC822),
+			FinishOn: entity.FinishOn.Format(time.RFC822),
+		}
+
+		responses = append(responses, response)
+	}
+
 	return
 }
 
