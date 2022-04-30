@@ -10,10 +10,10 @@ type IDGenerator interface {
 	GenerateGroupID() (id string, err error)
 	GenerateAdminID() (id string, err error)
 	GeneratePropertyID() (id string, err error)
+	GenerateShowScheduleID() (id string, err error)
 }
 
-type nanoidIDGenerator struct {
-}
+type nanoidIDGenerator struct{}
 
 func NewNanoidIDGenerator() *nanoidIDGenerator {
 	return &nanoidIDGenerator{}
@@ -34,6 +34,12 @@ func (n *nanoidIDGenerator) GenerateAdminID() (id string, err error) {
 func (n *nanoidIDGenerator) GeneratePropertyID() (id string, err error) {
 	id, err = n.generate(7)
 	id = fmt.Sprintf("p-%s", id)
+	return
+}
+
+func (n *nanoidIDGenerator) GenerateShowScheduleID() (id string, err error) {
+	id, err = n.generate(7)
+	id = fmt.Sprintf("s-%s", id)
 	return
 }
 
