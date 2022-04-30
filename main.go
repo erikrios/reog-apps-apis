@@ -36,6 +36,10 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
+
 // @host      localhost:3000
 // @BasePath  /api/v1
 func main() {
