@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/erikrios/reog-apps-apis/middleware"
 	"github.com/erikrios/reog-apps-apis/model"
 	"github.com/erikrios/reog-apps-apis/model/payload"
 	"github.com/erikrios/reog-apps-apis/model/response"
@@ -32,7 +33,7 @@ func NewGroupsController(
 }
 
 func (g *groupsController) Route(e *echo.Group) {
-	group := e.Group("/groups")
+	group := e.Group("/groups", middleware.JWTMiddleware())
 	group.POST("", g.postCreateGroup)
 	group.GET("", g.getGroups)
 	group.GET("/:id", g.getGroupByID)
