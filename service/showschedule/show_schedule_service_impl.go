@@ -90,8 +90,8 @@ func (s *showScheduleServiceImpl) GetAll(ctx context.Context) (responses []respo
 			ID:       entity.ID,
 			GroupID:  entity.GroupID,
 			Place:    entity.Place,
-			StartOn:  entity.StartOn,
-			FinishOn: entity.FinishOn,
+			StartOn:  entity.StartOn.Format(time.RFC822),
+			FinishOn: entity.FinishOn.Format(time.RFC822),
 		}
 
 		responses = append(responses, response)
@@ -101,6 +101,26 @@ func (s *showScheduleServiceImpl) GetAll(ctx context.Context) (responses []respo
 }
 
 func (s *showScheduleServiceImpl) GetByID(ctx context.Context, id string) (response response.ShowScheduleDetails, err error) {
+	entity, repoErr := s.showScheduleRepository.FindByID(ctx, id)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	response.ID = entity.ID
+	response.Place = entity.Place
+	response.StartOn = entity.StartOn.Format(time.RFC822)
+	response.FinishOn = entity.FinishOn.Format(time.RFC822)
+
+	groupEntity, repoErr := s.groupRepository.FindByID(ctx, entity.GroupID)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	response.GroupID = groupEntity.ID
+	response.GroupName = groupEntity.Name
+
 	return
 }
 
