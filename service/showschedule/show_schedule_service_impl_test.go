@@ -77,3 +77,17 @@ func TestGetByID(t *testing.T) {
 		t.Logf("no error: %+v", response)
 	}
 }
+
+func TestGetByGroupID(t *testing.T) {
+	var service ShowScheduleService = NewShowScheduleServiceImpl(
+		showschedule.NewShowScheduleRepositoryImpl(db),
+		group.NewGroupRepositoryImpl(db),
+		generator.NewNanoidIDGenerator(),
+	)
+
+	if responses, err := service.GetByGroupID(context.Background(), "g-Nzo"); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Logf("no error: %+v", responses)
+	}
+}
