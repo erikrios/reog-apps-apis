@@ -41,6 +41,17 @@ func (s *showScheduleRepositoryImpl) FindAll(ctx context.Context) (showSchedules
 	return
 }
 
+func (s *showScheduleRepositoryImpl) FindByID(ctx context.Context, id string) (showSchedule entity.ShowSchedule, err error) {
+	if dbErr := s.db.WithContext(ctx).First(&showSchedule, "id = ?", id).Error; dbErr != nil {
+		if errors.Is(dbErr, gorm.ErrRecordNotFound) {
+			err = repository.ErrRecordNotFound
+			return
+		}
+		err = repository.ErrDatabase
+	}
+	return
+}
+
 func (s *showScheduleRepositoryImpl) FindByGroupID(ctx context.Context, groupID string) (showSchedules []entity.ShowSchedule, err error) {
 	if dbErr := s.db.WithContext(ctx).Where("group_id = ?", groupID).Find(&showSchedules).Error; dbErr != nil {
 		log.Println(dbErr)
