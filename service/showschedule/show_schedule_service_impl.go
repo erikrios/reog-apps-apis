@@ -15,19 +15,20 @@ import (
 )
 
 type showScheduleServiceImpl struct {
-	showScheduleRepository showschedule.ShowcheduleRepository
+	showScheduleRepository showschedule.ShowScheduleRepository
 	groupRepository        group.GroupRepository
 	idGenerator            generator.IDGenerator
 }
 
 func NewShowScheduleServiceImpl(
-	showScheduleRepository showschedule.ShowcheduleRepository,
+	showScheduleRepository showschedule.ShowScheduleRepository,
 	groupRepository group.GroupRepository,
 	idGenerator generator.IDGenerator,
 ) *showScheduleServiceImpl {
 	return &showScheduleServiceImpl{
 		showScheduleRepository: showScheduleRepository,
 		groupRepository:        groupRepository,
+		idGenerator:            idGenerator,
 	}
 }
 
