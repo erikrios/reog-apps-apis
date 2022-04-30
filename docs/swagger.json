@@ -78,6 +78,11 @@
         },
         "/groups": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get Groups",
                 "produces": [
                     "application/json"
@@ -108,6 +113,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new group",
                 "consumes": [
                     "application/json"
@@ -166,6 +176,11 @@
         },
         "/groups/addresses/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update an address",
                 "consumes": [
                     "application/json"
@@ -221,6 +236,11 @@
         },
         "/groups/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get group by ID",
                 "produces": [
                     "application/json"
@@ -245,6 +265,12 @@
                             "$ref": "#/definitions/controller.groupResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -260,6 +286,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a group",
                 "consumes": [
                     "application/json"
@@ -320,6 +351,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete group by ID",
                 "produces": [
                     "application/json"
@@ -341,6 +377,12 @@
                     "204": {
                         "description": ""
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -358,6 +400,11 @@
         },
         "/groups/{id}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate QR Code",
                 "produces": [
                     "image/png"
@@ -382,6 +429,12 @@
                             "type": "file"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -399,6 +452,11 @@
         },
         "/groups/{id}/properties": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Add a Property",
                 "consumes": [
                     "application/json"
@@ -464,6 +522,11 @@
         },
         "/groups/{id}/properties/{propertyID}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a Property",
                 "consumes": [
                     "application/json"
@@ -531,10 +594,12 @@
                 }
             },
             "delete": {
-                "description": "Delete a Property",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
                 ],
+                "description": "Delete a Property",
                 "produces": [
                     "application/json"
                 ],
@@ -585,6 +650,11 @@
         },
         "/groups/{id}/properties/{propertyID}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate Property QR Code",
                 "produces": [
                     "image/png"
@@ -614,6 +684,12 @@
                         "description": "OK",
                         "schema": {
                             "type": "file"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -980,6 +1056,13 @@
                     "x-order": "3"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

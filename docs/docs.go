@@ -85,6 +85,11 @@ const docTemplate = `{
         },
         "/groups": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get Groups",
                 "produces": [
                     "application/json"
@@ -115,6 +120,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new group",
                 "consumes": [
                     "application/json"
@@ -173,6 +183,11 @@ const docTemplate = `{
         },
         "/groups/addresses/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update an address",
                 "consumes": [
                     "application/json"
@@ -228,6 +243,11 @@ const docTemplate = `{
         },
         "/groups/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get group by ID",
                 "produces": [
                     "application/json"
@@ -252,6 +272,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/controller.groupResponse"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -267,6 +293,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a group",
                 "consumes": [
                     "application/json"
@@ -327,6 +358,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete group by ID",
                 "produces": [
                     "application/json"
@@ -348,6 +384,12 @@ const docTemplate = `{
                     "204": {
                         "description": ""
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -365,6 +407,11 @@ const docTemplate = `{
         },
         "/groups/{id}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate QR Code",
                 "produces": [
                     "image/png"
@@ -389,6 +436,12 @@ const docTemplate = `{
                             "type": "file"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -406,6 +459,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Add a Property",
                 "consumes": [
                     "application/json"
@@ -471,6 +529,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties/{propertyID}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a Property",
                 "consumes": [
                     "application/json"
@@ -538,10 +601,12 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a Property",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
                 ],
+                "description": "Delete a Property",
                 "produces": [
                     "application/json"
                 ],
@@ -592,6 +657,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties/{propertyID}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate Property QR Code",
                 "produces": [
                     "image/png"
@@ -621,6 +691,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "file"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -987,6 +1063,13 @@ const docTemplate = `{
                     "x-order": "3"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

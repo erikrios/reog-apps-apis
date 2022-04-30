@@ -324,6 +324,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Get Groups
       tags:
       - groups
@@ -361,6 +363,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a Group
       tags:
       - groups
@@ -378,6 +382,10 @@ paths:
       responses:
         "204":
           description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -386,6 +394,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Delete Group by ID
       tags:
       - groups
@@ -404,6 +414,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/controller.groupResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -412,6 +426,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Get Group by ID
       tags:
       - groups
@@ -452,6 +468,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update a Group
       tags:
       - groups
@@ -471,6 +489,10 @@ paths:
           description: OK
           schema:
             type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -479,6 +501,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Generate QR Code
       tags:
       - groups
@@ -522,13 +546,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Add a Property
       tags:
       - groups
   /groups/{id}/properties/{propertyID}:
     delete:
-      consumes:
-      - application/json
       description: Delete a Property
       parameters:
       - description: group ID
@@ -558,6 +582,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Delete a Property
       tags:
       - groups
@@ -603,6 +629,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update a Property
       tags:
       - groups
@@ -627,6 +655,10 @@ paths:
           description: OK
           schema:
             type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -635,6 +667,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Generate Property QR Code
       tags:
       - groups
@@ -671,7 +705,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update an Address
       tags:
       - groups
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
