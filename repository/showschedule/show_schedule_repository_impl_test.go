@@ -28,7 +28,7 @@ func TestInsert(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	showSchedule := entity.ShowSchedule{
 		ID:       "s-An9LEb",
@@ -56,7 +56,7 @@ func TestFindAll(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	if showSchedules, err := repository.FindAll(context.Background()); err != nil {
 		t.Log("error:", err)
@@ -76,7 +76,7 @@ func TestFindByID(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	if showSchedule, err := repository.FindByID(context.Background(), "s-An9LEb"); err != nil {
 		t.Log("error:", err)
@@ -96,7 +96,7 @@ func TestFindByGroupID(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	if showSchedules, err := repository.FindByGroupID(context.Background(), "g-Nzo"); err != nil {
 		t.Log("error:", err)
@@ -116,7 +116,7 @@ func TestUpdate(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	showSchedule := entity.ShowSchedule{
 		Place:    "Lapangan Bungkal Update",
@@ -142,7 +142,7 @@ func TestDelete(t *testing.T) {
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
-	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+	var repository ShowScheduleRepository = NewShowScheduleRepositoryImpl(db)
 
 	if err := repository.Delete(context.Background(), "s-An9LEb"); err != nil {
 		t.Log("error:", err)
