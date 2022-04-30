@@ -65,6 +65,26 @@ func TestFindAll(t *testing.T) {
 	}
 }
 
+func TestFindByID(t *testing.T) {
+	db, err := config.NewPostgreSQLDatabase()
+	if err != nil {
+		log.Fatalln(err.Error())
+	} else {
+		log.Printf("Successfully connected to database with instance address: %p\n", db)
+	}
+
+	config.MigratePostgreSQLDatabase(db)
+	config.SetInitialDataPostgreSQLDatabase(db)
+
+	var repository ShowcheduleRepository = NewShowScheduleRepositoryImpl(db)
+
+	if showSchedule, err := repository.FindByID(context.Background(), "s-An9LEb"); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Logf("no error: %+v", showSchedule)
+	}
+}
+
 func TestFindByGroupID(t *testing.T) {
 	db, err := config.NewPostgreSQLDatabase()
 	if err != nil {
