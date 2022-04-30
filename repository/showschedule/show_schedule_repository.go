@@ -6,7 +6,7 @@ import (
 	"github.com/erikrios/reog-apps-apis/entity"
 )
 
-type ShowcheduleRepository interface {
+type ShowScheduleRepository interface {
 	Insert(ctx context.Context, showSchedule entity.ShowSchedule) (err error)
 	FindAll(ctx context.Context) (showSchedules []entity.ShowSchedule, err error)
 	FindByID(ctx context.Context, id string) (showSchedule entity.ShowSchedule, err error)
