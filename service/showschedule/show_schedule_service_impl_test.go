@@ -63,3 +63,17 @@ func TestGetAll(t *testing.T) {
 		t.Logf("no error: %+v", responses)
 	}
 }
+
+func TestGetByID(t *testing.T) {
+	var service ShowScheduleService = NewShowScheduleServiceImpl(
+		showschedule.NewShowScheduleRepositoryImpl(db),
+		group.NewGroupRepositoryImpl(db),
+		generator.NewNanoidIDGenerator(),
+	)
+
+	if response, err := service.GetByID(context.Background(), "s-yuKgD1O"); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Logf("no error: %+v", response)
+	}
+}
