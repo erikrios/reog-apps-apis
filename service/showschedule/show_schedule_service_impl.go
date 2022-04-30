@@ -44,6 +44,4 @@ func (s *showScheduleServiceImpl) Update(ctx context.Context, id string, p paylo
 	return
 }
 
-func (s *showScheduleServiceImpl) Delete(ctx context.Context, id string) (err error) {
-	return
-}
+func (s *showScheduleServiceImpl) Delete(ctx context.Context, id string) (err error) { return }
