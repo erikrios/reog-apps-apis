@@ -49,3 +49,17 @@ func TestCreate(t *testing.T) {
 		t.Logf("no error: %s", id)
 	}
 }
+
+func TestGetAll(t *testing.T) {
+	var service ShowScheduleService = NewShowScheduleServiceImpl(
+		showschedule.NewShowScheduleRepositoryImpl(db),
+		group.NewGroupRepositoryImpl(db),
+		generator.NewNanoidIDGenerator(),
+	)
+
+	if responses, err := service.GetAll(context.Background()); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Logf("no error: %+v", responses)
+	}
+}
