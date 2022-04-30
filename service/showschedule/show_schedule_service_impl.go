@@ -77,6 +77,26 @@ func (s *showScheduleServiceImpl) Create(ctx context.Context, p payload.CreateSh
 }
 
 func (s *showScheduleServiceImpl) GetAll(ctx context.Context) (responses []response.ShowSchedule, err error) {
+	entities, repoErr := s.showScheduleRepository.FindAll(ctx)
+	if repoErr != nil {
+		err = service.MapError(repoErr)
+		return
+	}
+
+	responses = make([]response.ShowSchedule, 0)
+
+	for _, entity := range entities {
+		response := response.ShowSchedule{
+			ID:       entity.ID,
+			GroupID:  entity.GroupID,
+			Place:    entity.Place,
+			StartOn:  entity.StartOn,
+			FinishOn: entity.FinishOn,
+		}
+
+		responses = append(responses, response)
+	}
+
 	return
 }
 
