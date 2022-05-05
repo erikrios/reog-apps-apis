@@ -111,3 +111,17 @@ func TestUpdate(t *testing.T) {
 		t.Logf("no error: %s", p.Place)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	var service ShowScheduleService = NewShowScheduleServiceImpl(
+		showschedule.NewShowScheduleRepositoryImpl(db),
+		group.NewGroupRepositoryImpl(db),
+		generator.NewNanoidIDGenerator(),
+	)
+
+	if err := service.Delete(context.Background(), "s-yuKgD1O"); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Log("no error")
+	}
+}
