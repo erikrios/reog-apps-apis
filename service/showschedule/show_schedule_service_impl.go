@@ -155,6 +155,33 @@ func (s *showScheduleServiceImpl) GetByGroupID(ctx context.Context, groupID stri
 }
 
 func (s *showScheduleServiceImpl) Update(ctx context.Context, id string, p payload.UpdateShowSchedule) (err error) {
+	if validateErr := validator.Validate(p); validateErr != nil {
+		err = service.ErrInvalidPayload
+		return
+	}
+
+	startOn, parseErr := time.Parse(time.RFC822, p.StartOn)
+	if parseErr != nil {
+		err = service.ErrTimeParsing
+		return
+	}
+
+	finishOn, parseErr := time.Parse(time.RFC822, p.FinishOn)
+	if parseErr != nil {
+		err = service.ErrTimeParsing
+		return
+	}
+
+	showSchedule := entity.ShowSchedule{
+		Place:    p.Place,
+		StartOn:  startOn,
+		FinishOn: finishOn,
+	}
+
+	if repoErr := s.showScheduleRepository.Update(ctx, id, showSchedule); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
+
 	return
 }
 
