@@ -185,4 +185,10 @@ func (s *showScheduleServiceImpl) Update(ctx context.Context, id string, p paylo
 	return
 }
 
-func (s *showScheduleServiceImpl) Delete(ctx context.Context, id string) (err error) { return }
+func (s *showScheduleServiceImpl) Delete(ctx context.Context, id string) (err error) {
+	if repoErr := s.showScheduleRepository.Delete(ctx, id); repoErr != nil {
+		err = service.MapError(repoErr)
+	}
+
+	return
+}
