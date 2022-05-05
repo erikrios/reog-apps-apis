@@ -2,126 +2,251 @@ package showschedule
 
 import (
 	"context"
-	"log"
+	"errors"
+	"fmt"
 	"testing"
 
-	"github.com/erikrios/reog-apps-apis/config"
+	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/model/payload"
-	"github.com/erikrios/reog-apps-apis/repository/group"
-	"github.com/erikrios/reog-apps-apis/repository/showschedule"
-	"github.com/erikrios/reog-apps-apis/utils/generator"
-	"github.com/joho/godotenv"
-	"gorm.io/gorm"
+	"github.com/erikrios/reog-apps-apis/repository"
+	mgr "github.com/erikrios/reog-apps-apis/repository/group/mocks"
+	mssr "github.com/erikrios/reog-apps-apis/repository/showschedule/mocks"
+	"github.com/erikrios/reog-apps-apis/service"
+	mig "github.com/erikrios/reog-apps-apis/utils/generator/mocks"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-var db *gorm.DB
-
-func init() {
-	if err := godotenv.Load("./../../.env.local"); err != nil {
-		log.Printf("Error loading .env file: %s\n", err.Error())
-	}
-	var err error
-	db, err = config.NewPostgreSQLDatabase()
-	if err != nil {
-		log.Fatalln(err.Error())
-	} else {
-		log.Printf("Successfully connected to database with instance address: %p\n", db)
-	}
-}
-
 func TestCreate(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
+	mockShowScheduleRepo := &mssr.ShowScheduleRepository{}
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockIDGen := &mig.IDGenerator{}
+
+	var showScheduleService ShowScheduleService = NewShowScheduleServiceImpl(
+		mockShowScheduleRepo,
+		mockGroupRepo,
+		mockIDGen,
 	)
 
-	p := payload.CreateShowSchedule{
-		GroupID:  "g-Nzo",
-		Place:    "Lapangan Bungkal",
-		StartOn:  "01 May 22 14:00 WIB",
-		FinishOn: "01 May 22 17:00 WIB",
+	testCases := []struct {
+		name                    string
+		inputCreateShowSchedule payload.CreateShowSchedule
+		expectedID              string
+		expectedError           error
+		mockBehaviours          func()
+	}{
+		{
+			name: "it should return service.ErrInvalidPayload error, when payload is invalid",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "",
+				FinishOn: "",
+			},
+			expectedID:     "",
+			expectedError:  service.ErrInvalidPayload,
+			mockBehaviours: func() {},
+		},
+		{
+			name: "it should return service.ErrTimeParsing error, when StartOn payload is invalid",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "Feb 02 06 15:04 WIB",
+				FinishOn: "Feb 02 06 17:05 WIB",
+			},
+			expectedID:     "",
+			expectedError:  service.ErrTimeParsing,
+			mockBehaviours: func() {},
+		},
+		{
+			name: "it should return service.ErrTimeParsing error, when FinishOn payload is invalid",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "Feb 02 06 17:05 WIB",
+			},
+			expectedID:     "",
+			expectedError:  service.ErrTimeParsing,
+			mockBehaviours: func() {},
+		},
+		{
+			name: "it should return service.ErrDataNotFound error, when group repository return an error",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "02 Feb 06 15:04 WIB",
+			},
+			expectedID:    "",
+			expectedError: service.ErrDataNotFound,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"FindByID",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) entity.Group {
+						return entity.Group{}
+					},
+					func(ctx context.Context, id string) error {
+						return repository.ErrRecordNotFound
+					},
+				).Once()
+			},
+		},
+		{
+			name: "it should return service.ErrRepository error, when id generator return an error",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "02 Feb 06 15:04 WIB",
+			},
+			expectedID:    "",
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"FindByID",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) entity.Group {
+						return entity.Group{}
+					},
+					func(ctx context.Context, id string) error {
+						return nil
+					},
+				).Once()
+
+				mockIDGen.On("GenerateShowScheduleID").Return(
+					func() string {
+						return ""
+					},
+					func() error {
+						return errors.New("error generate show schedule id")
+					},
+				).Once()
+			},
+		},
+		{
+			name: "it should return service.ErrRepository error, when show schedule repository return an error",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "02 Feb 06 15:04 WIB",
+			},
+			expectedID:    "s-EuKgD1O",
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"FindByID",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) entity.Group {
+						return entity.Group{}
+					},
+					func(ctx context.Context, id string) error {
+						return nil
+					},
+				).Once()
+
+				mockIDGen.On("GenerateShowScheduleID").Return(
+					func() string {
+						return "s-EuKgD1O"
+					},
+					func() error {
+						return nil
+					},
+				).Once()
+
+				mockShowScheduleRepo.On(
+					"Insert",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.ShowSchedule{})),
+				).Return(
+					func(ctx context.Context, e entity.ShowSchedule) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name: "it should return a valid ID, when no error is returned",
+			inputCreateShowSchedule: payload.CreateShowSchedule{
+				GroupID:  "g-xyz",
+				Place:    "Lapangan Bungkal",
+				StartOn:  "05 May 22 13:00 WIB",
+				FinishOn: "05 May 22 17:00 WIB",
+			},
+			expectedID:    "s-EuKgD1O",
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockGroupRepo.On(
+					"FindByID",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) entity.Group {
+						return entity.Group{}
+					},
+					func(ctx context.Context, id string) error {
+						return nil
+					},
+				).Once()
+
+				mockIDGen.On("GenerateShowScheduleID").Return(
+					func() string {
+						return "s-EuKgD1O"
+					},
+					func() error {
+						return nil
+					},
+				).Once()
+
+				mockShowScheduleRepo.On(
+					"Insert",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.ShowSchedule{})),
+				).Return(
+					func(ctx context.Context, e entity.ShowSchedule) error {
+						return nil
+					},
+				).Once()
+			},
+		},
 	}
 
-	if id, err := service.Create(context.Background(), p); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Logf("no error: %s", id)
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+
+			gotID, gotErr := showScheduleService.Create(context.Background(), testCase.inputCreateShowSchedule)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+				assert.Equal(t, testCase.expectedID, gotID)
+			}
+		})
 	}
 }
 
 func TestGetAll(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
-	)
-
-	if responses, err := service.GetAll(context.Background()); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Logf("no error: %+v", responses)
-	}
 }
 
 func TestGetByID(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
-	)
-
-	if response, err := service.GetByID(context.Background(), "s-yuKgD1O"); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Logf("no error: %+v", response)
-	}
 }
 
 func TestGetByGroupID(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
-	)
-
-	if responses, err := service.GetByGroupID(context.Background(), "g-Nzo"); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Logf("no error: %+v", responses)
-	}
 }
 
 func TestUpdate(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
-	)
-
-	p := payload.UpdateShowSchedule{
-		Place:    "Lapangan Sendang Bulus Pager",
-		StartOn:  "05 May 22 13:00 WIB",
-		FinishOn: "05 May 22 16:00 WIB",
-	}
-
-	if err := service.Update(context.Background(), "s-yuKgD1O", p); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Logf("no error: %s", p.Place)
-	}
 }
 
 func TestDelete(t *testing.T) {
-	var service ShowScheduleService = NewShowScheduleServiceImpl(
-		showschedule.NewShowScheduleRepositoryImpl(db),
-		group.NewGroupRepositoryImpl(db),
-		generator.NewNanoidIDGenerator(),
-	)
-
-	if err := service.Delete(context.Background(), "s-yuKgD1O"); err != nil {
-		t.Log("error:", err)
-	} else {
-		t.Log("no error")
-	}
 }
