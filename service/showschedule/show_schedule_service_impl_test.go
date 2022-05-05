@@ -91,3 +91,23 @@ func TestGetByGroupID(t *testing.T) {
 		t.Logf("no error: %+v", responses)
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	var service ShowScheduleService = NewShowScheduleServiceImpl(
+		showschedule.NewShowScheduleRepositoryImpl(db),
+		group.NewGroupRepositoryImpl(db),
+		generator.NewNanoidIDGenerator(),
+	)
+
+	p := payload.UpdateShowSchedule{
+		Place:    "Lapangan Sendang Bulus Pager",
+		StartOn:  "05 May 22 13:00 WIB",
+		FinishOn: "05 May 22 16:00 WIB",
+	}
+
+	if err := service.Update(context.Background(), "s-yuKgD1O", p); err != nil {
+		t.Log("error:", err)
+	} else {
+		t.Logf("no error: %s", p.Place)
+	}
+}
