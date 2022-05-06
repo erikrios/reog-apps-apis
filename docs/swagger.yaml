@@ -93,6 +93,42 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.showScheduleData:
+    properties:
+      show:
+        $ref: '#/definitions/response.ShowScheduleDetails'
+    type: object
+  controller.showScheduleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.showScheduleData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.showSchedulesData:
+    properties:
+      shows:
+        items:
+          $ref: '#/definitions/response.ShowSchedule'
+        type: array
+    type: object
+  controller.showSchedulesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.showSchedulesData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.tokenData:
     properties:
       token:
@@ -291,6 +327,49 @@ definitions:
         type: string
         x-order: "1"
     type: object
+  response.ShowSchedule:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "4"
+      groupID:
+        type: string
+        x-order: "1"
+      id:
+        type: string
+        x-order: "0"
+      place:
+        type: string
+        x-order: "2"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "3"
+    type: object
+  response.ShowScheduleDetails:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "5"
+      groupID:
+        type: string
+        x-order: "1"
+      groupName:
+        type: string
+        x-order: "2"
+      id:
+        type: string
+        x-order: "0"
+      place:
+        type: string
+        x-order: "3"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "4"
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -437,9 +516,9 @@ paths:
       tags:
       - groups
     get:
-      description: Get group by ID
+      description: Get Show Schedule by ID
       parameters:
-      - description: group ID
+      - description: show schedule ID
         in: path
         name: id
         required: true
@@ -450,7 +529,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.groupResponse'
+            $ref: '#/definitions/controller.showScheduleResponse'
         "401":
           description: Unauthorized
           schema:
@@ -465,9 +544,9 @@ paths:
             $ref: '#/definitions/echo.HTTPError'
       security:
       - ApiKeyAuth: []
-      summary: Get Group by ID
+      summary: Get Show Schedule by ID
       tags:
-      - groups
+      - shows
     put:
       consumes:
       - application/json
@@ -748,6 +827,37 @@ paths:
       tags:
       - groups
   /shows:
+    get:
+      description: Get show schedules
+      parameters:
+      - description: filter show schedules by group ID
+        in: query
+        name: group_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.showSchedulesResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Show Schedules
+      tags:
+      - shows
     post:
       consumes:
       - application/json

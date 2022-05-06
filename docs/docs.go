@@ -248,18 +248,18 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get group by ID",
+                "description": "Get Show Schedule by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "groups"
+                    "shows"
                 ],
-                "summary": "Get Group by ID",
+                "summary": "Get Show Schedule by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "group ID",
+                        "description": "show schedule ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -269,7 +269,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.groupResponse"
+                            "$ref": "#/definitions/controller.showScheduleResponse"
                         }
                     },
                     "401": {
@@ -715,6 +715,55 @@ const docTemplate = `{
             }
         },
         "/shows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get show schedules",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Get Show Schedules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter show schedules by group ID",
+                        "name": "group_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.showSchedulesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -912,6 +961,59 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.showScheduleData": {
+            "type": "object",
+            "properties": {
+                "show": {
+                    "$ref": "#/definitions/response.ShowScheduleDetails"
+                }
+            }
+        },
+        "controller.showScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showScheduleData"
+                }
+            }
+        },
+        "controller.showSchedulesData": {
+            "type": "object",
+            "properties": {
+                "shows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ShowSchedule"
+                    }
+                }
+            }
+        },
+        "controller.showSchedulesResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showSchedulesData"
+                }
+            }
+        },
         "controller.tokenData": {
             "type": "object",
             "properties": {
@@ -1104,11 +1206,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
@@ -1172,6 +1274,64 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer",
                     "x-order": "3"
+                }
+            }
+        },
+        "response.ShowSchedule": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                }
+            }
+        },
+        "response.ShowScheduleDetails": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "groupName": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "5"
                 }
             }
         }
