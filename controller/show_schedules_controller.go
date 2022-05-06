@@ -25,6 +25,7 @@ func (s *showSchedulesController) Route(e *echo.Group) {
 	group.POST("", s.postCreateShowSchedule)
 	group.GET("", s.getShowSchedules)
 	group.GET("/:id", s.getShowScheduleByID)
+	group.PUT("/:id", s.putUpdateShowScheduleByID)
 }
 
 // postCreateShowSchedule godoc
@@ -113,6 +114,37 @@ func (s *showSchedulesController) getShowScheduleByID(c echo.Context) error {
 	showScheduleResponse := map[string]any{"show": show}
 	response := model.NewResponse("success", "successfully get show schedule with id "+id, showScheduleResponse)
 	return c.JSON(http.StatusOK, response)
+}
+
+// putUpdateShowScheduleByID godoc
+// @Summary      Update a Show Schedule
+// @Description  Update a show schedule
+// @Tags         shows
+// @Accept       json
+// @Produce      json
+// @Param        default  body  payload.UpdateShowSchedule  true  "request body"
+// @Param        id       path  string                      true  "show schedule ID"
+// @Security     ApiKeyAuth
+// @Success      204
+// @Failure      400  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /shows/{id} [put]
+func (s *showSchedulesController) putUpdateShowScheduleByID(c echo.Context) error {
+	id := c.Param("id")
+
+	payload := new(payload.UpdateShowSchedule)
+	if err := c.Bind(payload); err != nil {
+		return newErrorResponse(service.ErrInvalidPayload)
+	}
+
+	err := s.service.Update(c.Request().Context(), id, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // createGroupResponse struct is used for swaggo to generate the API documentation, as it doesn't support generic yet.
