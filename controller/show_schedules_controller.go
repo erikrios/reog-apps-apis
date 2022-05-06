@@ -26,6 +26,7 @@ func (s *showSchedulesController) Route(e *echo.Group) {
 	group.GET("", s.getShowSchedules)
 	group.GET("/:id", s.getShowScheduleByID)
 	group.PUT("/:id", s.putUpdateShowScheduleByID)
+	group.DELETE("/:id", s.deleteShowScheduleByID)
 }
 
 // postCreateShowSchedule godoc
@@ -140,6 +141,30 @@ func (s *showSchedulesController) putUpdateShowScheduleByID(c echo.Context) erro
 	}
 
 	err := s.service.Update(c.Request().Context(), id, *payload)
+	if err != nil {
+		return newErrorResponse(err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
+// deleteShowScheduleByID godoc
+// @Summary      Delete Show Schedule by ID
+// @Description  Delete show schedule by ID
+// @Tags         shows
+// @Produce      json
+// @Param        id  path  string  true  "show schedule ID"
+// @Security     ApiKeyAuth
+// @Success      204
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
+// @Router       /shows/{id} [delete]
+func (s *showSchedulesController) deleteShowScheduleByID(c echo.Context) error {
+	id := c.Param("id")
+
+	err := s.service.Delete(c.Request().Context(), id)
+
 	if err != nil {
 		return newErrorResponse(err)
 	}
