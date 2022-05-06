@@ -918,6 +918,36 @@ paths:
       tags:
       - shows
   /shows/{id}:
+    delete:
+      description: Delete show schedule by ID
+      parameters:
+      - description: show schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Show Schedule by ID
+      tags:
+      - shows
     put:
       consumes:
       - application/json
