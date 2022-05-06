@@ -613,6 +613,137 @@ func TestGetByGroupID(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	mockShowScheduleRepo := &mssr.ShowScheduleRepository{}
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockIDGen := &mig.IDGenerator{}
+
+	var showScheduleService ShowScheduleService = NewShowScheduleServiceImpl(
+		mockShowScheduleRepo,
+		mockGroupRepo,
+		mockIDGen,
+	)
+
+	testCases := []struct {
+		name                    string
+		inputID                 string
+		inputUpdateShowSchedule payload.UpdateShowSchedule
+		expectedError           error
+		mockBehaviours          func()
+	}{
+		{
+			name:    "it should return service.ErrInvalidPayload error, when payload is invalid",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "",
+				FinishOn: "",
+			},
+			expectedError:  service.ErrInvalidPayload,
+			mockBehaviours: func() {},
+		},
+		{
+			name:    "it should return service.ErrTimeParsing error, when StartOn payload is invalid",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "Feb 02 06 15:04 WIB",
+				FinishOn: "Feb 02 06 17:05 WIB",
+			},
+			expectedError:  service.ErrTimeParsing,
+			mockBehaviours: func() {},
+		},
+		{
+			name:    "it should return service.ErrTimeParsing error, when FinishOn payload is invalid",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "Feb 02 06 17:05 WIB",
+			},
+			expectedError:  service.ErrTimeParsing,
+			mockBehaviours: func() {},
+		},
+		{
+			name:    "it should return service.ErrDataNotFound error, when show schedule repository return an error",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "02 Feb 06 15:04 WIB",
+			},
+			expectedError: service.ErrDataNotFound,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.ShowSchedule{})),
+				).Return(
+					func(ctx context.Context, id string, e entity.ShowSchedule) error {
+						return repository.ErrRecordNotFound
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return service.ErrRepository error, when show schedule repository return an error",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "02 Feb 06 15:04 WIB",
+				FinishOn: "02 Feb 06 15:04 WIB",
+			},
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.ShowSchedule{})),
+				).Return(
+					func(ctx context.Context, id string, e entity.ShowSchedule) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name:    "it should return a nil error, when no error is returned",
+			inputID: "s-EuKgD1O",
+			inputUpdateShowSchedule: payload.UpdateShowSchedule{
+				Place:    "Lapangan Bungkal",
+				StartOn:  "05 May 22 13:00 WIB",
+				FinishOn: "05 May 22 17:00 WIB",
+			},
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Update",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					mock.AnythingOfType(fmt.Sprintf("%T", entity.ShowSchedule{})),
+				).Return(
+					func(ctx context.Context, id string, e entity.ShowSchedule) error {
+						return nil
+					},
+				).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+
+			gotErr := showScheduleService.Update(context.Background(), testCase.inputID, testCase.inputUpdateShowSchedule)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+			}
+		})
+	}
 }
 
 func TestDelete(t *testing.T) {
