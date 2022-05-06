@@ -825,6 +825,73 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/shows/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Update a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.UpdateShowSchedule"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "show schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1183,6 +1250,31 @@ const docTemplate = `{
                 }
             }
         },
+        "payload.UpdateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "2"
+                }
+            }
+        },
         "response.Address": {
             "type": "object",
             "properties": {
@@ -1206,11 +1298,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
