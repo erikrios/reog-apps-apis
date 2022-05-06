@@ -747,4 +747,83 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
+	mockShowScheduleRepo := &mssr.ShowScheduleRepository{}
+	mockGroupRepo := &mgr.GroupRepository{}
+	mockIDGen := &mig.IDGenerator{}
+
+	var showScheduleService ShowScheduleService = NewShowScheduleServiceImpl(
+		mockShowScheduleRepo,
+		mockGroupRepo,
+		mockIDGen,
+	)
+
+	testCases := []struct {
+		name           string
+		inputID        string
+		expectedError  error
+		mockBehaviours func()
+	}{
+		{
+			name:          "it should return service.ErrDataNotFound error, when show schedule repository return an error",
+			inputID:       "s-EuKgD1O",
+			expectedError: service.ErrDataNotFound,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Delete",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) error {
+						return repository.ErrRecordNotFound
+					},
+				).Once()
+			},
+		},
+		{
+			name:          "it should return service.ErrRepository error, when show schedule repository return an error",
+			inputID:       "s-EuKgD1O",
+			expectedError: service.ErrRepository,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Delete",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) error {
+						return repository.ErrDatabase
+					},
+				).Once()
+			},
+		},
+		{
+			name:          "it should return a nil error, when no error is returned",
+			inputID:       "s-EuKgD1O",
+			expectedError: nil,
+			mockBehaviours: func() {
+				mockShowScheduleRepo.On(
+					"Delete",
+					mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+					mock.AnythingOfType(fmt.Sprintf("%T", "")),
+				).Return(
+					func(ctx context.Context, id string) error {
+						return nil
+					},
+				).Once()
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviours()
+
+			gotErr := showScheduleService.Delete(context.Background(), testCase.inputID)
+
+			if testCase.expectedError != nil {
+				assert.ErrorIs(t, gotErr, testCase.expectedError)
+			} else {
+				assert.NoError(t, gotErr)
+			}
+		})
+	}
 }
