@@ -12,11 +12,13 @@ import (
 	ar "github.com/erikrios/reog-apps-apis/repository/admin"
 	gr "github.com/erikrios/reog-apps-apis/repository/group"
 	pr "github.com/erikrios/reog-apps-apis/repository/property"
+	ssr "github.com/erikrios/reog-apps-apis/repository/showschedule"
 	vr "github.com/erikrios/reog-apps-apis/repository/village"
 	ds "github.com/erikrios/reog-apps-apis/service/address"
 	as "github.com/erikrios/reog-apps-apis/service/admin"
 	gs "github.com/erikrios/reog-apps-apis/service/group"
 	ps "github.com/erikrios/reog-apps-apis/service/property"
+	sss "github.com/erikrios/reog-apps-apis/service/showschedule"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
 	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
@@ -70,14 +72,17 @@ func main() {
 	villageRepository := vr.NewVillageRepositoryImpl()
 	addressRepository := dr.NewAddressRepositoryImpl(db)
 	propertyRepository := pr.NewPropertyRepositoryImpl(db)
+	showScheduleRepository := ssr.NewShowScheduleRepositoryImpl(db)
 
 	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
 	groupService := gs.NewGroupServiceImpl(groupRepository, villageRepository, idGenerator, qrCodeGenerator)
 	addressService := ds.NewAddressServiceImpl(addressRepository, villageRepository)
 	propertyService := ps.NewPropertyServiceImpl(propertyRepository, groupRepository, idGenerator, qrCodeGenerator)
+	showScheduleService := sss.NewShowScheduleServiceImpl(showScheduleRepository, groupRepository, idGenerator)
 
 	adminsController := controller.NewAdminsController(adminService)
 	groupsController := controller.NewGroupsController(groupService, propertyService, addressService)
+	showSchedulesController := controller.NewShowSchedulesController(showScheduleService)
 
 	e := echo.New()
 
@@ -98,6 +103,7 @@ func main() {
 	g := e.Group("/api/v1")
 	adminsController.Route(g)
 	groupsController.Route(g)
+	showSchedulesController.Route(g)
 
 	e.Logger.Fatal(e.Start(port))
 }
