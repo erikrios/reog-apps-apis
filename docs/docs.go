@@ -713,6 +713,69 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/shows": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Create a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.CreateShowSchedule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.createShowScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -734,6 +797,23 @@ const docTemplate = `{
             }
         },
         "controller.createPropertyResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.createShowScheduleResponse": {
             "type": "object",
             "properties": {
                 "status": {
@@ -894,6 +974,37 @@ const docTemplate = `{
                     "type": "integer",
                     "minimum": 1,
                     "x-order": "2"
+                }
+            }
+        },
+        "payload.CreateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "2"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "3"
                 }
             }
         },

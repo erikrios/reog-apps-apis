@@ -24,6 +24,18 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.createShowScheduleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.groupData:
     properties:
       group:
@@ -129,6 +141,31 @@ definitions:
         minLength: 2
         type: string
         x-order: "0"
+    type: object
+  payload.CreateShowSchedule:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "3"
+      groupID:
+        maxLength: 10
+        minLength: 2
+        type: string
+        x-order: "0"
+      place:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "1"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "2"
     type: object
   payload.Credential:
     properties:
@@ -710,6 +747,46 @@ paths:
       summary: Update an Address
       tags:
       - groups
+  /shows:
+    post:
+      consumes:
+      - application/json
+      description: Create a new show schedule
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateShowSchedule'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createShowScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a Show Schedule
+      tags:
+      - shows
 securityDefinitions:
   ApiKeyAuth:
     in: header
