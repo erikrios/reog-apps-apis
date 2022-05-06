@@ -19,6 +19,9 @@ func newErrorResponse(err error) *echo.HTTPError {
 	} else if errors.Is(err, service.ErrDataAlreadyExists) {
 		statusCode = http.StatusBadRequest
 		message = "Data already exists."
+	} else if errors.Is(err, service.ErrTimeParsing) {
+		statusCode = http.StatusBadRequest
+		message = "Invalid time format. Please use RFC822 time format (02 Jan 06 15:04 MST)"
 	} else if errors.Is(err, service.ErrInvalidPayload) {
 		statusCode = http.StatusBadRequest
 		message = "Invalid payload. Please check the payload schema in the API Documentation."
