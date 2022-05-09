@@ -85,6 +85,11 @@ const docTemplate = `{
         },
         "/groups": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get Groups",
                 "produces": [
                     "application/json"
@@ -115,6 +120,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new group",
                 "consumes": [
                     "application/json"
@@ -173,6 +183,11 @@ const docTemplate = `{
         },
         "/groups/addresses/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update an address",
                 "consumes": [
                     "application/json"
@@ -228,18 +243,23 @@ const docTemplate = `{
         },
         "/groups/{id}": {
             "get": {
-                "description": "Get group by ID",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Show Schedule by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "groups"
+                    "shows"
                 ],
-                "summary": "Get Group by ID",
+                "summary": "Get Show Schedule by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "group ID",
+                        "description": "show schedule ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -249,7 +269,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.groupResponse"
+                            "$ref": "#/definitions/controller.showScheduleResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -267,6 +293,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a group",
                 "consumes": [
                     "application/json"
@@ -327,6 +358,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete group by ID",
                 "produces": [
                     "application/json"
@@ -348,6 +384,12 @@ const docTemplate = `{
                     "204": {
                         "description": ""
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -365,6 +407,11 @@ const docTemplate = `{
         },
         "/groups/{id}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate QR Code",
                 "produces": [
                     "image/png"
@@ -389,6 +436,12 @@ const docTemplate = `{
                             "type": "file"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -406,6 +459,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Add a Property",
                 "consumes": [
                     "application/json"
@@ -471,6 +529,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties/{propertyID}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a Property",
                 "consumes": [
                     "application/json"
@@ -538,10 +601,12 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a Property",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
                 ],
+                "description": "Delete a Property",
                 "produces": [
                     "application/json"
                 ],
@@ -592,6 +657,11 @@ const docTemplate = `{
         },
         "/groups/{id}/properties/{propertyID}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate Property QR Code",
                 "produces": [
                     "image/png"
@@ -621,6 +691,238 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "file"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/shows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get show schedules",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Get Show Schedules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter show schedules by group ID",
+                        "name": "group_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.showSchedulesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Create a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.CreateShowSchedule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.createShowScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/shows/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Update a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.UpdateShowSchedule"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "show schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete show schedule by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Delete Show Schedule by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "show schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -658,6 +960,23 @@ const docTemplate = `{
             }
         },
         "controller.createPropertyResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.createShowScheduleResponse": {
             "type": "object",
             "properties": {
                 "status": {
@@ -756,6 +1075,59 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.showScheduleData": {
+            "type": "object",
+            "properties": {
+                "show": {
+                    "$ref": "#/definitions/response.ShowScheduleDetails"
+                }
+            }
+        },
+        "controller.showScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showScheduleData"
+                }
+            }
+        },
+        "controller.showSchedulesData": {
+            "type": "object",
+            "properties": {
+                "shows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ShowSchedule"
+                    }
+                }
+            }
+        },
+        "controller.showSchedulesResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showSchedulesData"
+                }
+            }
+        },
         "controller.tokenData": {
             "type": "object",
             "properties": {
@@ -818,6 +1190,37 @@ const docTemplate = `{
                     "type": "integer",
                     "minimum": 1,
                     "x-order": "2"
+                }
+            }
+        },
+        "payload.CreateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "2"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "3"
                 }
             }
         },
@@ -890,6 +1293,31 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer",
                     "minimum": 1,
+                    "x-order": "2"
+                }
+            }
+        },
+        "payload.UpdateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
                     "x-order": "2"
                 }
             }
@@ -987,6 +1415,71 @@ const docTemplate = `{
                     "x-order": "3"
                 }
             }
+        },
+        "response.ShowSchedule": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                }
+            }
+        },
+        "response.ShowScheduleDetails": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "groupName": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "5"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -994,7 +1487,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost",
+	Host:             "localhost:3000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Reog Apps API",

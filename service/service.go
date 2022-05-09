@@ -12,6 +12,7 @@ var (
 	ErrDataAlreadyExists  = errors.New("service: data already exists")
 	ErrInvalidPayload     = errors.New("service: invalid payload")
 	ErrCredentialNotMatch = errors.New("service: credential not match")
+	ErrTimeParsing        = errors.New("service: time parsing error")
 )
 
 func MapError(from error) error {

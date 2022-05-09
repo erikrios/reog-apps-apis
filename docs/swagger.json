@@ -15,7 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost",
+    "host": "localhost:3000",
     "basePath": "/api/v1",
     "paths": {
         "/admins": {
@@ -78,6 +78,11 @@
         },
         "/groups": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get Groups",
                 "produces": [
                     "application/json"
@@ -108,6 +113,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new group",
                 "consumes": [
                     "application/json"
@@ -166,6 +176,11 @@
         },
         "/groups/addresses/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update an address",
                 "consumes": [
                     "application/json"
@@ -221,18 +236,23 @@
         },
         "/groups/{id}": {
             "get": {
-                "description": "Get group by ID",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Show Schedule by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "groups"
+                    "shows"
                 ],
-                "summary": "Get Group by ID",
+                "summary": "Get Show Schedule by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "group ID",
+                        "description": "show schedule ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -242,7 +262,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.groupResponse"
+                            "$ref": "#/definitions/controller.showScheduleResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -260,6 +286,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a group",
                 "consumes": [
                     "application/json"
@@ -320,6 +351,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete group by ID",
                 "produces": [
                     "application/json"
@@ -341,6 +377,12 @@
                     "204": {
                         "description": ""
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -358,6 +400,11 @@
         },
         "/groups/{id}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate QR Code",
                 "produces": [
                     "image/png"
@@ -382,6 +429,12 @@
                             "type": "file"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -399,6 +452,11 @@
         },
         "/groups/{id}/properties": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Add a Property",
                 "consumes": [
                     "application/json"
@@ -464,6 +522,11 @@
         },
         "/groups/{id}/properties/{propertyID}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a Property",
                 "consumes": [
                     "application/json"
@@ -531,10 +594,12 @@
                 }
             },
             "delete": {
-                "description": "Delete a Property",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
                 ],
+                "description": "Delete a Property",
                 "produces": [
                     "application/json"
                 ],
@@ -585,6 +650,11 @@
         },
         "/groups/{id}/properties/{propertyID}/generate": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Generate Property QR Code",
                 "produces": [
                     "image/png"
@@ -614,6 +684,238 @@
                         "description": "OK",
                         "schema": {
                             "type": "file"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/shows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get show schedules",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Get Show Schedules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter show schedules by group ID",
+                        "name": "group_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.showSchedulesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Create a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.CreateShowSchedule"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.createShowScheduleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/shows/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a show schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Update a Show Schedule",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "default",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payload.UpdateShowSchedule"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "show schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete show schedule by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shows"
+                ],
+                "summary": "Delete Show Schedule by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "show schedule ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
                         }
                     },
                     "404": {
@@ -651,6 +953,23 @@
             }
         },
         "controller.createPropertyResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.idData"
+                }
+            }
+        },
+        "controller.createShowScheduleResponse": {
             "type": "object",
             "properties": {
                 "status": {
@@ -749,6 +1068,59 @@
                 }
             }
         },
+        "controller.showScheduleData": {
+            "type": "object",
+            "properties": {
+                "show": {
+                    "$ref": "#/definitions/response.ShowScheduleDetails"
+                }
+            }
+        },
+        "controller.showScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showScheduleData"
+                }
+            }
+        },
+        "controller.showSchedulesData": {
+            "type": "object",
+            "properties": {
+                "shows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ShowSchedule"
+                    }
+                }
+            }
+        },
+        "controller.showSchedulesResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "data": {
+                    "x-order": "2",
+                    "$ref": "#/definitions/controller.showSchedulesData"
+                }
+            }
+        },
         "controller.tokenData": {
             "type": "object",
             "properties": {
@@ -811,6 +1183,37 @@
                     "type": "integer",
                     "minimum": 1,
                     "x-order": "2"
+                }
+            }
+        },
+        "payload.CreateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "groupID": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "2"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "3"
                 }
             }
         },
@@ -887,6 +1290,31 @@
                 }
             }
         },
+        "payload.UpdateShowSchedule": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 2,
+                    "x-order": "0"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "1"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2,
+                    "x-order": "2"
+                }
+            }
+        },
         "response.Address": {
             "type": "object",
             "properties": {
@@ -910,11 +1338,11 @@
                     "type": "string",
                     "x-order": "4"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
@@ -980,6 +1408,71 @@
                     "x-order": "3"
                 }
             }
+        },
+        "response.ShowSchedule": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                }
+            }
+        },
+        "response.ShowScheduleDetails": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "groupID": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "groupName": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "place": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "startOn": {
+                    "description": "StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "4"
+                },
+                "finishOn": {
+                    "description": "FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)",
+                    "type": "string",
+                    "x-order": "5"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

@@ -24,6 +24,18 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.createShowScheduleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.idData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.groupData:
     properties:
       group:
@@ -81,6 +93,42 @@ definitions:
         type: string
         x-order: "0"
     type: object
+  controller.showScheduleData:
+    properties:
+      show:
+        $ref: '#/definitions/response.ShowScheduleDetails'
+    type: object
+  controller.showScheduleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.showScheduleData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
+  controller.showSchedulesData:
+    properties:
+      shows:
+        items:
+          $ref: '#/definitions/response.ShowSchedule'
+        type: array
+    type: object
+  controller.showSchedulesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/controller.showSchedulesData'
+        x-order: "2"
+      message:
+        type: string
+        x-order: "1"
+      status:
+        type: string
+        x-order: "0"
+    type: object
   controller.tokenData:
     properties:
       token:
@@ -129,6 +177,31 @@ definitions:
         minLength: 2
         type: string
         x-order: "0"
+    type: object
+  payload.CreateShowSchedule:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "3"
+      groupID:
+        maxLength: 10
+        minLength: 2
+        type: string
+        x-order: "0"
+      place:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "1"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "2"
     type: object
   payload.Credential:
     properties:
@@ -185,6 +258,26 @@ definitions:
         minLength: 2
         type: string
         x-order: "0"
+    type: object
+  payload.UpdateShowSchedule:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "2"
+      place:
+        maxLength: 1000
+        minLength: 2
+        type: string
+        x-order: "0"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        maxLength: 30
+        minLength: 2
+        type: string
+        x-order: "1"
     type: object
   response.Address:
     properties:
@@ -254,7 +347,50 @@ definitions:
         type: string
         x-order: "1"
     type: object
-host: localhost
+  response.ShowSchedule:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "4"
+      groupID:
+        type: string
+        x-order: "1"
+      id:
+        type: string
+        x-order: "0"
+      place:
+        type: string
+        x-order: "2"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "3"
+    type: object
+  response.ShowScheduleDetails:
+    properties:
+      finishOn:
+        description: 'FinishOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "5"
+      groupID:
+        type: string
+        x-order: "1"
+      groupName:
+        type: string
+        x-order: "2"
+      id:
+        type: string
+        x-order: "0"
+      place:
+        type: string
+        x-order: "3"
+      startOn:
+        description: 'StartOn layout format: time.RFC822 (02 Jan 06 15:04 MST)'
+        type: string
+        x-order: "4"
+    type: object
+host: localhost:3000
 info:
   contact:
     email: erikriosetiawan15@gmail.com
@@ -324,6 +460,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Get Groups
       tags:
       - groups
@@ -361,6 +499,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Create a Group
       tags:
       - groups
@@ -378,6 +518,10 @@ paths:
       responses:
         "204":
           description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -386,13 +530,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Delete Group by ID
       tags:
       - groups
     get:
-      description: Get group by ID
+      description: Get Show Schedule by ID
       parameters:
-      - description: group ID
+      - description: show schedule ID
         in: path
         name: id
         required: true
@@ -403,7 +549,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.groupResponse'
+            $ref: '#/definitions/controller.showScheduleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -412,9 +562,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
-      summary: Get Group by ID
+      security:
+      - ApiKeyAuth: []
+      summary: Get Show Schedule by ID
       tags:
-      - groups
+      - shows
     put:
       consumes:
       - application/json
@@ -452,6 +604,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update a Group
       tags:
       - groups
@@ -471,6 +625,10 @@ paths:
           description: OK
           schema:
             type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -479,6 +637,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Generate QR Code
       tags:
       - groups
@@ -522,13 +682,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Add a Property
       tags:
       - groups
   /groups/{id}/properties/{propertyID}:
     delete:
-      consumes:
-      - application/json
       description: Delete a Property
       parameters:
       - description: group ID
@@ -558,6 +718,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Delete a Property
       tags:
       - groups
@@ -603,6 +765,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update a Property
       tags:
       - groups
@@ -627,6 +791,10 @@ paths:
           description: OK
           schema:
             type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
         "404":
           description: Not Found
           schema:
@@ -635,6 +803,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Generate Property QR Code
       tags:
       - groups
@@ -671,7 +841,158 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
       summary: Update an Address
       tags:
       - groups
+  /shows:
+    get:
+      description: Get show schedules
+      parameters:
+      - description: filter show schedules by group ID
+        in: query
+        name: group_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.showSchedulesResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Show Schedules
+      tags:
+      - shows
+    post:
+      consumes:
+      - application/json
+      description: Create a new show schedule
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.CreateShowSchedule'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.createShowScheduleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a Show Schedule
+      tags:
+      - shows
+  /shows/{id}:
+    delete:
+      description: Delete show schedule by ID
+      parameters:
+      - description: show schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Show Schedule by ID
+      tags:
+      - shows
+    put:
+      consumes:
+      - application/json
+      description: Update a show schedule
+      parameters:
+      - description: request body
+        in: body
+        name: default
+        required: true
+        schema:
+          $ref: '#/definitions/payload.UpdateShowSchedule'
+      - description: show schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a Show Schedule
+      tags:
+      - shows
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

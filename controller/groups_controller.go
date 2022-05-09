@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/erikrios/reog-apps-apis/middleware"
 	"github.com/erikrios/reog-apps-apis/model"
 	"github.com/erikrios/reog-apps-apis/model/payload"
 	"github.com/erikrios/reog-apps-apis/model/response"
@@ -32,7 +33,7 @@ func NewGroupsController(
 }
 
 func (g *groupsController) Route(e *echo.Group) {
-	group := e.Group("/groups")
+	group := e.Group("/groups", middleware.JWTMiddleware())
 	group.POST("", g.postCreateGroup)
 	group.GET("", g.getGroups)
 	group.GET("/:id", g.getGroupByID)
@@ -52,12 +53,13 @@ func (g *groupsController) Route(e *echo.Group) {
 // @Tags         groups
 // @Accept       json
 // @Produce      json
-// @Param        default  body      payload.CreateGroup  true  "request body"
-// @Success      201      {object}  createGroupResponse
-// @Failure      400      {object}  echo.HTTPError
-// @Failure      401      {object}  echo.HTTPError
-// @Failure      404      {object}  echo.HTTPError
-// @Failure      500      {object}  echo.HTTPError
+// @Param        default  body  payload.CreateGroup  true  "request body"
+// @Security     ApiKeyAuth
+// @Success      201  {object}  createGroupResponse
+// @Failure      400  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
 // @Router       /groups [post]
 func (g *groupsController) postCreateGroup(c echo.Context) error {
 	payload := new(payload.CreateGroup)
@@ -80,9 +82,10 @@ func (g *groupsController) postCreateGroup(c echo.Context) error {
 // @Description  Get Groups
 // @Tags         groups
 // @Produce      json
+// @Security     ApiKeyAuth
 // @Success      200  {object}  groupsResponse
-// @Failure      401      {object}  echo.HTTPError
-// @Failure      500      {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
 // @Router       /groups [get]
 func (g *groupsController) getGroups(c echo.Context) error {
 	groups, err := g.groupService.GetAll(c.Request().Context())
@@ -100,10 +103,12 @@ func (g *groupsController) getGroups(c echo.Context) error {
 // @Description  Get group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id          path  string                  true  "group ID"
+// @Param        id          path  string  true  "group ID"
+// @Security     ApiKeyAuth
 // @Success      200  {object}  groupResponse
-// @Failure      404         {object}  echo.HTTPError
-// @Failure      500         {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
+// @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id} [get]
 func (g *groupsController) getGroupByID(c echo.Context) error {
 	id := c.Param("id")
@@ -127,10 +132,11 @@ func (g *groupsController) getGroupByID(c echo.Context) error {
 // @Produce      json
 // @Param        default  body  payload.UpdateGroup  true  "request body"
 // @Param        id       path  string               true  "group ID"
+// @Security     ApiKeyAuth
 // @Success      204
-// @Failure      400      {object}  echo.HTTPError
+// @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
-// @Failure      404      {object}  echo.HTTPError
+// @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id} [put]
 func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
@@ -154,9 +160,11 @@ func (g *groupsController) putUpdateGroupByID(c echo.Context) error {
 // @Description  Delete group by ID
 // @Tags         groups
 // @Produce      json
-// @Param        id          path      string  true  "group ID"
+// @Param        id  path  string  true  "group ID"
+// @Security     ApiKeyAuth
 // @Success      204
 // @Failure      404  {object}  echo.HTTPError
+// @Failure      401  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id} [delete]
 func (g *groupsController) deleteGroupByID(c echo.Context) error {
@@ -176,8 +184,10 @@ func (g *groupsController) deleteGroupByID(c echo.Context) error {
 // @Description  Generate QR Code
 // @Tags         groups
 // @Produce      image/png
-// @Param        id          path  string  true  "group ID"
-// @Success      200         {file}    binary
+// @Param        id  path  string  true  "group ID"
+// @Security     ApiKeyAuth
+// @Success      200  {file}    binary
+// @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id}/generate [get]
@@ -200,6 +210,7 @@ func (g *groupsController) getGenerateQRCode(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        default  body  payload.UpdateAddress  true  "request body"
+// @Security     ApiKeyAuth
 // @Success      204
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -228,9 +239,10 @@ func (g *groupsController) putUpdateAddress(c echo.Context) error {
 // @Tags         groups
 // @Accept       json
 // @Produce      json
-// @Param        default  body      payload.CreateProperty  true  "request body"
-// @Param        id       path      string                  true  "group ID"
-// @Success      201      {object}  createPropertyResponse
+// @Param        default  body  payload.CreateProperty  true  "request body"
+// @Param        id       path  string                  true  "group ID"
+// @Security     ApiKeyAuth
+// @Success      201  {object}  createPropertyResponse
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
@@ -261,8 +273,9 @@ func (g *groupsController) postCreateProperty(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        default     body  payload.UpdateProperty  true  "request body"
-// @Param        id   path      string  true  "group ID"
-// @Param        propertyID  path      string  true  "property ID"
+// @Param        id          path  string                  true  "group ID"
+// @Param        propertyID  path  string  true  "property ID"
+// @Security     ApiKeyAuth
 // @Success      204
 // @Failure      400  {object}  echo.HTTPError
 // @Failure      401  {object}  echo.HTTPError
@@ -287,10 +300,10 @@ func (g *groupsController) putUpdateProperty(c echo.Context) error {
 // @Summary      Delete a Property
 // @Description  Delete a Property
 // @Tags         groups
-// @Accept       json
 // @Produce      json
-// @Param        id   path      string  true  "group ID"
+// @Param        id          path  string  true  "group ID"
 // @Param        propertyID  path  string  true  "property ID"
+// @Security     ApiKeyAuth
 // @Success      204
 // @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
@@ -312,7 +325,9 @@ func (g *groupsController) deleteProperty(c echo.Context) error {
 // @Produce      image/png
 // @Param        id  path  string  true  "group ID"
 // @Param        propertyID  path  string                  true  "property ID"
+// @Security     ApiKeyAuth
 // @Success      200  {file}    binary
+// @Failure      401  {object}  echo.HTTPError
 // @Failure      404  {object}  echo.HTTPError
 // @Failure      500  {object}  echo.HTTPError
 // @Router       /groups/{id}/properties/{propertyID}/generate [get]

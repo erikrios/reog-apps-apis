@@ -27,7 +27,7 @@ func NewPostgreSQLDatabase() (*gorm.DB, error) {
 }
 
 func MigratePostgreSQLDatabase(db *gorm.DB) error {
-	return db.AutoMigrate(&entity.Admin{}, &entity.Group{}, &entity.Address{}, &entity.Property{})
+	return db.AutoMigrate(&entity.Admin{}, &entity.Group{}, &entity.Address{}, &entity.Property{}, &entity.ShowSchedule{})
 }
 
 func SetInitialDataPostgreSQLDatabase(db *gorm.DB) error {

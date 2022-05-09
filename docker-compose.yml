@@ -12,3 +12,36 @@ services:
       - '5432:5432'
     expose:
       - '5432'
+    volumes:
+      - reog-apps-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  api:
+    image: "erikrios/reog-apps-apis:1.0"
+    restart: always
+    container_name: reog-apps-apis
+    environment:
+      ENV: 'development'
+      PORT: '3000'
+      DB_PORT: '5432'
+      DB_HOST: 'reog-apps-db'
+      DB_USER: 'erikrios'
+      DB_PASSWORD: 'erikrios'
+      DB_NAME: 'reog_apps_db'
+      JWT_SECRET: 'ErikRioSetiawan'
+      PONOROGO_ADMINISTRATIVE_AREA_BASE_URL: 'https://ponorogo-api.herokuapp.com/api/v1'
+      ADMIN_USERNAME: 'admin'
+      ADMIN_NAME: 'administrator'
+      ADMIN_PASSWORD: 'erikrios'
+    ports: 
+      - '3000:3000'
+    expose:
+      - '3000'
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  reog-apps-db-volume:
