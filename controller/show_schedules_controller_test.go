@@ -592,3 +592,103 @@ func TestPutUpdateShowScheduleByID(t *testing.T) {
 		}
 	})
 }
+
+func TestDeleteShowScheduleByID(t *testing.T) {
+	mockShowScheduleService := &mocks.ShowScheduleService{}
+
+	t.Run("success scenario", func(t *testing.T) {
+		mockShowScheduleService.On(
+			"Delete",
+			mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+			mock.AnythingOfType(fmt.Sprintf("%T", "")),
+		).Return(
+			func(ctx context.Context, id string) error {
+				return nil
+			},
+		).Once()
+
+		t.Run("it should return 204 status code with valid response, when there is no error", func(t *testing.T) {
+			controller := NewShowSchedulesController(mockShowScheduleService)
+
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodDelete, "/api/v1/shows", nil)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetPath("/:id")
+			c.SetParamNames("id")
+			c.SetParamValues("s-abcdefg")
+
+			if assert.NoError(t, controller.deleteShowScheduleByID(c)) {
+				assert.Equal(t, http.StatusNoContent, rec.Code)
+			}
+		})
+	})
+
+	t.Run("failed scenario", func(t *testing.T) {
+		testCases := []struct {
+			name                 string
+			expectedStatusCode   int
+			expectedErrorMessage string
+			mockBehaviour        func()
+		}{
+			{
+				name:                 "it should return 404 status code, when village ID not found",
+				expectedStatusCode:   http.StatusNotFound,
+				expectedErrorMessage: "Resource with given ID not found.",
+				mockBehaviour: func() {
+					mockShowScheduleService.On(
+						"Delete",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) error {
+							return service.ErrDataNotFound
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 500 status code, when error happened",
+				expectedStatusCode:   http.StatusInternalServerError,
+				expectedErrorMessage: "Something went wrong.",
+				mockBehaviour: func() {
+					mockShowScheduleService.On(
+						"Delete",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+					).Return(
+						func(ctx context.Context, id string) error {
+							return service.ErrRepository
+						},
+					).Once()
+				},
+			},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.name, func(t *testing.T) {
+				testCase.mockBehaviour()
+
+				controller := NewShowSchedulesController(mockShowScheduleService)
+
+				e := echo.New()
+				req := httptest.NewRequest(http.MethodDelete, "/api/v1/shows", nil)
+				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+				c := e.NewContext(req, rec)
+				c.SetPath("/:id")
+				c.SetParamNames("id")
+				c.SetParamValues("s-abcdefg")
+
+				gotError := controller.deleteShowScheduleByID(c)
+				if assert.Error(t, gotError) {
+					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
+						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
+						assert.Equal(t, testCase.expectedErrorMessage, echoHTTPError.Message)
+					}
+				}
+			})
+		}
+	})
+}
