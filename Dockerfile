@@ -1,5 +1,6 @@
 # Build stage
 FROM golang:alpine3.15 AS builder
+RUN apk add git
 WORKDIR /app
 COPY go.mod go.sum ./ 
 RUN go mod download && go mod verify
