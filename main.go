@@ -104,6 +104,5 @@ func main() {
 	adminsController.Route(g)
 	groupsController.Route(g)
 	showSchedulesController.Route(g)
-
 	e.Logger.Fatal(e.Start(port))
 }
