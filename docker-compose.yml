@@ -12,6 +12,8 @@ services:
       - '5432:5432'
     expose:
       - '5432'
+    volumes:
+      - reog-apps-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -41,5 +43,5 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-
+volumes:
+  reog-apps-db-volume:
