@@ -29,7 +29,7 @@ jobs:
           push: true
           tags: erikrios/reog-apps-apis:1.0
 
-      - name: ssh aws ec2 and redeploy docker
+      - name: SSH to VM instance and redeploy Docker
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
