@@ -452,3 +452,143 @@ func TestGetShowScheduleByID(t *testing.T) {
 		}
 	})
 }
+
+func TestPutUpdateShowScheduleByID(t *testing.T) {
+	mockShowScheduleService := &mocks.ShowScheduleService{}
+
+	t.Run("success scenario", func(t *testing.T) {
+		dummyReq := payload.UpdateShowSchedule{
+			Place:    "Lapangan Pager",
+			StartOn:  "09 May 22 13:00 WIB",
+			FinishOn: "09 May 22 17:00 WIB",
+		}
+
+		mockShowScheduleService.On(
+			"Update",
+			mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+			mock.AnythingOfType(fmt.Sprintf("%T", "")),
+			mock.AnythingOfType(fmt.Sprintf("%T", payload.UpdateShowSchedule{})),
+		).Return(
+			func(ctx context.Context, id string, p payload.UpdateShowSchedule) error {
+				return nil
+			},
+		).Once()
+
+		t.Run("it should return 204 status code with valid response, when there is no error", func(t *testing.T) {
+			controller := NewShowSchedulesController(mockShowScheduleService)
+			requestBody, err := json.Marshal(dummyReq)
+			assert.NoError(t, err)
+
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodPut, "/api/v1/shows", strings.NewReader(string(requestBody)))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetPath("/:id")
+			c.SetParamNames("id")
+			c.SetParamValues("s-abcdefg")
+
+			if assert.NoError(t, controller.putUpdateShowScheduleByID(c)) {
+				assert.Equal(t, http.StatusNoContent, rec.Code)
+			}
+		})
+	})
+
+	t.Run("failed scenario", func(t *testing.T) {
+		dummyReq := payload.UpdateShowSchedule{
+			Place:    "Lapangan Pager",
+			StartOn:  "09 May 22 13:00 WIB",
+			FinishOn: "09 May 22 17:00 WIB",
+		}
+
+		testCases := []struct {
+			name                 string
+			inputPayload         payload.UpdateShowSchedule
+			expectedStatusCode   int
+			expectedErrorMessage string
+			mockBehaviour        func()
+		}{
+			{
+				name:                 "it should return 400 status code, when payload is invalid",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusBadRequest,
+				expectedErrorMessage: "Invalid payload. Please check the payload schema in the API Documentation.",
+				mockBehaviour: func() {
+					mockShowScheduleService.On(
+						"Update",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.UpdateShowSchedule{})),
+					).Return(
+						func(ctx context.Context, id string, p payload.UpdateShowSchedule) error {
+							return service.ErrInvalidPayload
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 404 status code, when show schedule ID not found",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusNotFound,
+				expectedErrorMessage: "Resource with given ID not found.",
+				mockBehaviour: func() {
+					mockShowScheduleService.On(
+						"Update",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.UpdateShowSchedule{})),
+					).Return(
+						func(ctx context.Context, id string, p payload.UpdateShowSchedule) error {
+							return service.ErrDataNotFound
+						},
+					).Once()
+				},
+			},
+			{
+				name:                 "it should return 500 status code, when error happened",
+				inputPayload:         dummyReq,
+				expectedStatusCode:   http.StatusInternalServerError,
+				expectedErrorMessage: "Something went wrong.",
+				mockBehaviour: func() {
+					mockShowScheduleService.On(
+						"Update",
+						mock.AnythingOfType(fmt.Sprintf("%T", context.Background())),
+						mock.AnythingOfType(fmt.Sprintf("%T", "")),
+						mock.AnythingOfType(fmt.Sprintf("%T", payload.UpdateShowSchedule{})),
+					).Return(
+						func(ctx context.Context, id string, p payload.UpdateShowSchedule) error {
+							return service.ErrRepository
+						},
+					).Once()
+				},
+			},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.name, func(t *testing.T) {
+				testCase.mockBehaviour()
+
+				controller := NewShowSchedulesController(mockShowScheduleService)
+				requestBody, err := json.Marshal(dummyReq)
+				assert.NoError(t, err)
+
+				e := echo.New()
+				req := httptest.NewRequest(http.MethodPut, "/api/v1/shows", strings.NewReader(string(requestBody)))
+				req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+				c := e.NewContext(req, rec)
+				c.SetPath("/:id")
+				c.SetParamNames("id")
+				c.SetParamValues("s-abcdefg")
+
+				gotError := controller.putUpdateShowScheduleByID(c)
+				if assert.Error(t, gotError) {
+					if echoHTTPError, ok := gotError.(*echo.HTTPError); assert.Equal(t, true, ok) {
+						assert.Equal(t, testCase.expectedStatusCode, echoHTTPError.Code)
+						assert.Equal(t, testCase.expectedErrorMessage, echoHTTPError.Message)
+					}
+				}
+			})
+		}
+	})
+}
