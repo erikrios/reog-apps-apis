@@ -24,8 +24,8 @@ func (a *adminsController) Route(g *echo.Group) {
 }
 
 // PostLogin     godoc
-// @Summary      Admin Login
-// @Description  Admin login
+// @Summary      Administrator Login
+// @Description  Administrator login
 // @Tags         admins
 // @Accept       json
 // @Produce      json

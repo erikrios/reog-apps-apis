@@ -101,9 +101,9 @@ func main() {
 	e.GET("/*", echoSwagger.WrapHandler)
 
 	g := e.Group("/api/v1")
+
 	adminsController.Route(g)
 	groupsController.Route(g)
 	showSchedulesController.Route(g)
-
 	e.Logger.Fatal(e.Start(port))
 }
