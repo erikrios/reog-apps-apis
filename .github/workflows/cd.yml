@@ -8,8 +8,8 @@ jobs:
   ini-jobs-cd:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ secrets.DOCKERHUB_USERNAME }} ini
-      - run: echo ${{ secrets.DOCKERHUB_TOKEN }} ini
+      - run: echo "${{ secrets.DOCKERHUB_USERNAME }}"
+      - run: echo "${{ secrets.DOCKERHUB_TOKEN }}"
   docker:
     runs-on: ubuntu-latest
     steps:
