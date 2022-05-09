@@ -3,13 +3,10 @@ name: Continuous Delivery
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  ini-jobs-cd:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ secrets.DOCKERHUB_USERNAME }} | sed -e 's/\(.\)/\1 /g'
-      - run: echo ${{ secrets.DOCKERHUB_TOKEN }} | sed -e 's/\(.\)/\1 /g'
   docker:
     runs-on: ubuntu-latest
     steps:
