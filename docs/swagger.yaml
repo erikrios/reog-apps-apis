@@ -408,7 +408,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Admin login
+      description: Administrator login
       parameters:
       - description: admin credentials
         in: body
@@ -439,7 +439,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/echo.HTTPError'
-      summary: Admin Login
+      summary: Administrator Login
       tags:
       - admins
   /groups:

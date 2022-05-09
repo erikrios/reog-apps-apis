@@ -20,7 +20,7 @@
     "paths": {
         "/admins": {
             "post": {
-                "description": "Admin login",
+                "description": "Administrator login",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,7 +30,7 @@
                 "tags": [
                     "admins"
                 ],
-                "summary": "Admin Login",
+                "summary": "Administrator Login",
                 "parameters": [
                     {
                         "description": "admin credentials",

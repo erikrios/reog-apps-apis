@@ -27,7 +27,7 @@ const docTemplate = `{
     "paths": {
         "/admins": {
             "post": {
-                "description": "Admin login",
+                "description": "Administrator login",
                 "consumes": [
                     "application/json"
                 ],
@@ -37,7 +37,7 @@ const docTemplate = `{
                 "tags": [
                     "admins"
                 ],
-                "summary": "Admin Login",
+                "summary": "Administrator Login",
                 "parameters": [
                     {
                         "description": "admin credentials",
@@ -1345,11 +1345,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
