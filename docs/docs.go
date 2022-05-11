@@ -1345,11 +1345,11 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4"
                 },
-                "regencyID": {
+                "districtName": {
                     "type": "string",
                     "x-order": "5"
                 },
-                "districtName": {
+                "regencyID": {
                     "type": "string",
                     "x-order": "5"
                 },
@@ -1487,7 +1487,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "103.183.74.19:80",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Reog Apps API",
