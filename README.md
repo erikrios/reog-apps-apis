@@ -33,10 +33,10 @@
   <p align="center">
    Reog Apps API: API For Reog Groups in Ponorogo 
     <br />
-    <a href="https://ponorogo-api.herokuapp.com/"><strong>Explore the docs »</strong></a>
+    <a href="http://103.183.74.19/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://ponorogo-api.herokuapp.com">View Demo</a>
+    <a href="http://103.183.74.19">View Demo</a>
     ·
     <a href="https://github.com/erikrios/reog-apps-apis/issues">Report Bug</a>
     ·
@@ -101,7 +101,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a API Documentation at [https://ponorogo-api.herokuapp.com/](https://ponorogo-api.herokuapp.com/)
+1. Get a API Documentation at [http://103.183.74.19/](http://103.183.74.19/)
 2. Clone the repo
    ```sh
    git clone git@github.com:erikrios/reog-apps-apis.git
@@ -136,7 +136,7 @@ This is an example of how to list things you need to use the software and how to
 
 ## Usage
 
-_For more examples, please refer to the [Documentation](https://ponorogo-api.herokuapp.com/)_
+_For more examples, please refer to the [Documentation](http://103.183.74.19/)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -189,7 +189,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Erik Rio Setiawan - [github](https://github.com/erikrios) - erikriosetiawan15@gmail.com
 
-Project Link: [https://github.com/erikrios/reog-apps-apis](https://github.com/erikrios/ponorogo-regency-api)
+Project Link: [https://github.com/erikrios/reog-apps-apis](https://github.com/erikrios/reog-apps-apis)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
