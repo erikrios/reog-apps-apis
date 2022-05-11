@@ -390,7 +390,7 @@ definitions:
         type: string
         x-order: "4"
     type: object
-host: localhost:3000
+host: 103.183.74.19:80
 info:
   contact:
     email: erikriosetiawan15@gmail.com
