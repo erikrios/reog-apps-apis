@@ -33,10 +33,10 @@
   <p align="center">
    Reog Apps API: API For Reog Groups in Ponorogo 
     <br />
-    <a href="https://103.183.74.19/"><strong>Explore the docs »</strong></a>
+    <a href="http://103.183.74.19/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://103.183.74.19">View Demo</a>
+    <a href="http://103.183.74.19">View Demo</a>
     ·
     <a href="https://github.com/erikrios/reog-apps-apis/issues">Report Bug</a>
     ·
@@ -101,7 +101,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a API Documentation at [https://103.183.74.19/](https://103.183.74.19/)
+1. Get a API Documentation at [http://103.183.74.19/](http://103.183.74.19/)
 2. Clone the repo
    ```sh
    git clone git@github.com:erikrios/reog-apps-apis.git
@@ -136,7 +136,7 @@ This is an example of how to list things you need to use the software and how to
 
 ## Usage
 
-_For more examples, please refer to the [Documentation](https://103.183.74.19/)_
+_For more examples, please refer to the [Documentation](http://103.183.74.19/)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
