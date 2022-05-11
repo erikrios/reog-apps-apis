@@ -42,7 +42,7 @@ import (
 // @in                          header
 // @name                        Authorization
 
-// @host      localhost:3000
+// @host      103.183.74.19:80
 // @BasePath  /api/v1
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
