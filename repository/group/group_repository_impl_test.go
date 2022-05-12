@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type mockLog struct{}
@@ -180,6 +181,93 @@ func TestInsertAll(t *testing.T) {
 				assert.Equal(t, testCase.expectedError, gotError)
 			} else {
 				assert.NoError(t, gotError)
+			}
+		})
+	}
+}
+
+func TestFindAll(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer db.Close()
+
+	dialector := postgres.New(postgres.Config{
+		DriverName:           "postgres",
+		DSN:                  "sqlmock_db_0",
+		PreferSimpleProtocol: true,
+		Conn:                 db,
+	})
+	mockDB, err := gorm.Open(dialector, &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	var repo GroupRepository = NewGroupRepositoryImpl(mockDB, &mockLog{})
+
+	testCases := []struct {
+		name           string
+		expectedGroups []entity.Group
+		expectedError  error
+		mockBehaviour  func()
+	}{
+		{
+			name: "it should return valid groups, when database successfully return the data",
+			expectedGroups: []entity.Group{
+				{
+					ID:     "g-xyz",
+					Name:   "Paguyuban Reog",
+					Leader: "Erik",
+				},
+			},
+			expectedError: nil,
+			mockBehaviour: func() {
+				returnedRows := sqlmock.NewRows([]string{"id", "name", "leader", "created_at", "updated_at", "deleted_at"})
+				returnedRows.AddRow(
+					"g-xyz",
+					"Paguyuban Reog",
+					"Erik",
+					nil,
+					nil,
+					nil,
+				)
+				mock.ExpectQuery(".*").WillReturnRows(returnedRows)
+				mock.ExpectQuery(".*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "address", "village_id", "villlage_name", "district_id", "district_name", "regency_id", "regency_name, province_id", "province_name", "created_at", "updated_at", "deleted_at"}))
+				mock.ExpectQuery(".*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "amount", "group_id", "created_at", "updated_at", "deleted_at"}))
+			},
+		},
+		{
+			name:           "it should return ErrDatabase, when database return an error",
+			expectedGroups: []entity.Group{},
+			expectedError:  repository.ErrDatabase,
+			mockBehaviour: func() {
+				mock.ExpectQuery(".*").WillReturnError(gorm.ErrInvalidDB)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviour()
+
+			gotEntity, gotError := repo.FindAll(context.Background())
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+
+			if testCase.expectedError != nil {
+				assert.Equal(t, testCase.expectedError, gotError)
+			} else {
+				assert.NoError(t, gotError)
+				assert.Equal(t, len(testCase.expectedGroups), len(gotEntity))
+				for i, group := range testCase.expectedGroups {
+					assert.Equal(t, group.ID, gotEntity[i].ID)
+					assert.Equal(t, group.Name, gotEntity[i].Name)
+					assert.Equal(t, group.Leader, gotEntity[i].Leader)
+				}
 			}
 		})
 	}
