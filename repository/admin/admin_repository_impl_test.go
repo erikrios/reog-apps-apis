@@ -12,6 +12,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type mockLog struct{}
+
+func (m *mockLog) Error(message string) {}
+
 func TestFindByUsername(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -27,7 +31,7 @@ func TestFindByUsername(t *testing.T) {
 		Conn:                 db,
 	})
 	mockDB, err := gorm.Open(dialector, &gorm.Config{})
-	var repo AdminRepository = NewAdminRepositoryImpl(mockDB)
+	var repo AdminRepository = NewAdminRepositoryImpl(mockDB, &mockLog{})
 
 	testCases := []struct {
 		name          string
