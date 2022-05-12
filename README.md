@@ -23,7 +23,8 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-[![Go][github-actions-shield]][github-actions-url]
+[![Continuous Integration][github-actions-shield-ci]][github-actions-url-ci]
+[![Continuous Delivery][github-actions-shield-cd]][github-actions-url-cd]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -219,8 +220,10 @@ to kick things off!
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[github-actions-shield]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml/badge.svg
-[github-actions-url]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml
+[github-actions-shield-ci]: https://github.com/erikrios/reog-apps-apis/actions/workflows/ci.yml/badge.svg
+[github-actions-url-ci]: https://github.com/erikrios/reog-apps-apis/actions/workflows/ci.yml
+[github-actions-shield-cd]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml/badge.svg
+[github-actions-url-cd]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml
 [contributors-shield]: https://img.shields.io/github/contributors/erikrios/reog-apps-apis.svg?style=for-the-badge
 [contributors-url]: https://github.com/erikrios/reog-apps-apis/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/erikrios/reog-apps-apis.svg?style=for-the-badge
