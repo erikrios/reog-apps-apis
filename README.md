@@ -219,8 +219,8 @@ to kick things off!
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[github-actions-shield]: https://github.com/erikrios/reog-apps-apis/actions/workflows/go.yml/badge.svg
-[github-actions-url]: https://github.com/erikrios/reog-apps-apis/actions/workflows/go.yml
+[github-actions-shield]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml/badge.svg
+[github-actions-url]: https://github.com/erikrios/reog-apps-apis/actions/workflows/cd.yml
 [contributors-shield]: https://img.shields.io/github/contributors/erikrios/reog-apps-apis.svg?style=for-the-badge
 [contributors-url]: https://github.com/erikrios/reog-apps-apis/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/erikrios/reog-apps-apis.svg?style=for-the-badge
