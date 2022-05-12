@@ -83,6 +83,7 @@ Reog Apps API is an open source project that provides API (Application Programmi
 - [Go](https://golang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Echo](https://echo.labstack.com/)
+- [MongoDB (Logging)](https://www.mongodb.com/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -124,6 +125,10 @@ This is an example of how to list things you need to use the software and how to
    ADMIN_USERNAME=<INITIAL_ADMIN_USERNAME>
    ADMIN_NAME=<INITIAL_ADMIN_NAME>
    ADMIN_PASSWORD=<INITIAL_ADMIN_PASSWORD>
+   MONGO_USERNAME=erikrios
+   MONGO_PASSWORD=erikrios
+   MONGO_HOST=localhost
+   MONGO_PORT=27017
    ```
 5. Run
    ```sh
