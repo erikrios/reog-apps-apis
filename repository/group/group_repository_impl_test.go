@@ -41,6 +41,7 @@ func TestInsert(t *testing.T) {
 	}{
 		{
 			name:          "it should return nil error, when successfully insert the data to database",
+			inputGroup:    entity.Group{},
 			expectedError: nil,
 			mockBehaviour: func() {
 				mock.ExpectBegin()
@@ -57,6 +58,7 @@ func TestInsert(t *testing.T) {
 		},
 		{
 			name:          "it should return ErrDatabase, when database return an error",
+			inputGroup:    entity.Group{},
 			expectedError: repository.ErrDatabase,
 			mockBehaviour: func() {
 				mock.ExpectBegin()
@@ -92,6 +94,83 @@ func TestInsert(t *testing.T) {
 			testCase.mockBehaviour()
 
 			gotError := repo.Insert(context.Background(), testCase.inputGroup)
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+
+			if testCase.expectedError != nil {
+				assert.Equal(t, testCase.expectedError, gotError)
+			} else {
+				assert.NoError(t, gotError)
+			}
+		})
+	}
+}
+
+func TestInsertAll(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer db.Close()
+
+	dialector := postgres.New(postgres.Config{
+		DriverName:           "postgres",
+		DSN:                  "sqlmock_db_0",
+		PreferSimpleProtocol: true,
+		Conn:                 db,
+	})
+	mockDB, err := gorm.Open(dialector, &gorm.Config{})
+	var repo GroupRepository = NewGroupRepositoryImpl(mockDB, &mockLog{})
+
+	testCases := []struct {
+		name          string
+		inputGroups   []entity.Group
+		expectedError error
+		mockBehaviour func()
+	}{
+		{
+			name:          "it should return nil error, when successfully insert the data to database",
+			inputGroups:   []entity.Group{{}},
+			expectedError: nil,
+			mockBehaviour: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(".*").WithArgs(
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+				).WillReturnResult(sqlmock.NewResult(1, 0))
+				mock.ExpectCommit()
+			},
+		},
+		{
+			name:          "it should return ErrDatabase, when database return an error",
+			inputGroups:   []entity.Group{{}},
+			expectedError: repository.ErrDatabase,
+			mockBehaviour: func() {
+				mock.ExpectBegin()
+				mock.ExpectExec(".*").WithArgs(
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+					sqlmock.AnyArg(),
+				).WillReturnError(gorm.ErrInvalidDB)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviour()
+
+			gotError := repo.InsertAll(context.Background(), testCase.inputGroups)
 
 			if err := mock.ExpectationsWereMet(); err != nil {
 				t.Fatal(err)
