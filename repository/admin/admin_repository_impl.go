@@ -7,15 +7,17 @@ import (
 
 	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/repository"
+	"github.com/erikrios/reog-apps-apis/utils/logging"
 	"gorm.io/gorm"
 )
 
 type adminRepositoryImpl struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger logging.Logging
 }
 
-func NewAdminRepositoryImpl(db *gorm.DB) *adminRepositoryImpl {
-	return &adminRepositoryImpl{db: db}
+func NewAdminRepositoryImpl(db *gorm.DB, logger logging.Logging) *adminRepositoryImpl {
+	return &adminRepositoryImpl{db: db, logger: logger}
 }
 
 func (a *adminRepositoryImpl) FindByUsername(ctx context.Context, username string) (admin entity.Admin, err error) {
@@ -24,8 +26,13 @@ func (a *adminRepositoryImpl) FindByUsername(ctx context.Context, username strin
 			err = repository.ErrRecordNotFound
 			return
 		}
+
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(a.logger, dbErr.Error())
+
 		err = repository.ErrDatabase
-		log.Println(err)
+		log.Println(dbErr)
 	}
 	return
 }

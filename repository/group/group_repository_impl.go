@@ -7,16 +7,18 @@ import (
 
 	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/repository"
+	"github.com/erikrios/reog-apps-apis/utils/logging"
 	"github.com/jackc/pgconn"
 	"gorm.io/gorm"
 )
 
 type groupRepositoryImpl struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger logging.Logging
 }
 
-func NewGroupRepositoryImpl(db *gorm.DB) *groupRepositoryImpl {
-	return &groupRepositoryImpl{db: db}
+func NewGroupRepositoryImpl(db *gorm.DB, logger logging.Logging) *groupRepositoryImpl {
+	return &groupRepositoryImpl{db: db, logger: logger}
 }
 
 func (g *groupRepositoryImpl) Insert(ctx context.Context, group entity.Group) (err error) {
@@ -26,6 +28,11 @@ func (g *groupRepositoryImpl) Insert(ctx context.Context, group entity.Group) (e
 			err = repository.ErrRecordAlreadyExists
 			return
 		}
+
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(g.logger, dbErr.Error())
+
 		log.Println(dbErr)
 		err = repository.ErrDatabase
 	}
@@ -39,6 +46,11 @@ func (g *groupRepositoryImpl) InsertAll(ctx context.Context, groups []entity.Gro
 			err = repository.ErrRecordAlreadyExists
 			return
 		}
+
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(g.logger, dbErr.Error())
+
 		log.Println(dbErr)
 		err = repository.ErrDatabase
 	}
@@ -47,6 +59,10 @@ func (g *groupRepositoryImpl) InsertAll(ctx context.Context, groups []entity.Gro
 
 func (g *groupRepositoryImpl) FindAll(ctx context.Context) (groups []entity.Group, err error) {
 	if dbErr := g.db.WithContext(ctx).Preload("Address").Preload("Properties").Find(&groups).Error; dbErr != nil {
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(g.logger, dbErr.Error())
+
 		log.Println(dbErr)
 		err = repository.ErrDatabase
 		return
@@ -60,6 +76,11 @@ func (g *groupRepositoryImpl) FindByID(ctx context.Context, id string) (group en
 			err = repository.ErrRecordNotFound
 			return
 		}
+
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(g.logger, dbErr.Error())
+
 		err = repository.ErrDatabase
 	}
 	return
@@ -67,6 +88,10 @@ func (g *groupRepositoryImpl) FindByID(ctx context.Context, id string) (group en
 
 func (g *groupRepositoryImpl) Update(ctx context.Context, id string, group entity.Group) (err error) {
 	if result := g.db.WithContext(ctx).Where("id = ?", id).UpdateColumns(&group); result.Error != nil {
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(g.logger, result.Error.Error())
+
 		log.Println(result.Error)
 		err = repository.ErrDatabase
 	} else {
@@ -84,17 +109,28 @@ func (g *groupRepositoryImpl) Delete(ctx context.Context, id string) (err error)
 				return repository.ErrRecordNotFound
 			}
 		} else {
+			go func(logger logging.Logging, message string) {
+				logger.Error(message)
+			}(g.logger, result.Error.Error())
+
 			log.Println(result.Error)
-			log.Println(result)
 			return repository.ErrDatabase
 		}
 
 		if dbErr := tx.WithContext(ctx).Delete(&entity.Address{}, "id = ?", id).Error; dbErr != nil {
+			go func(logger logging.Logging, message string) {
+				logger.Error(message)
+			}(g.logger, dbErr.Error())
+
 			log.Println(dbErr)
 			return repository.ErrDatabase
 		}
 
 		if dbErr := tx.WithContext(ctx).Delete(&entity.Property{}, "group_id = ?", id).Error; dbErr != nil {
+			go func(logger logging.Logging, message string) {
+				logger.Error(message)
+			}(g.logger, dbErr.Error())
+
 			log.Println(dbErr)
 			return repository.ErrDatabase
 		}

@@ -9,13 +9,15 @@ import (
 
 	"github.com/erikrios/reog-apps-apis/entity"
 	"github.com/erikrios/reog-apps-apis/repository"
+	"github.com/erikrios/reog-apps-apis/utils/logging"
 )
 
 type villageRepositoryImpl struct {
+	logger logging.Logging
 }
 
-func NewVillageRepositoryImpl() *villageRepositoryImpl {
-	return &villageRepositoryImpl{}
+func NewVillageRepositoryImpl(logger logging.Logging) *villageRepositoryImpl {
+	return &villageRepositoryImpl{logger: logger}
 }
 
 func (v *villageRepositoryImpl) FindByID(id string) (village entity.Village, err error) {
@@ -24,6 +26,10 @@ func (v *villageRepositoryImpl) FindByID(id string) (village entity.Village, err
 
 	request, reqErr := http.NewRequest(http.MethodGet, baseUrl+"/villages/"+id, nil)
 	if reqErr != nil {
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(v.logger, reqErr.Error())
+
 		log.Print(reqErr)
 		err = repository.ErrDatabase
 		return
@@ -31,6 +37,10 @@ func (v *villageRepositoryImpl) FindByID(id string) (village entity.Village, err
 
 	response, reqErr := client.Do(request)
 	if reqErr != nil {
+		go func(logger logging.Logging, message string) {
+			logger.Error(message)
+		}(v.logger, reqErr.Error())
+
 		log.Print(reqErr)
 		err = repository.ErrDatabase
 		return
@@ -44,6 +54,10 @@ func (v *villageRepositoryImpl) FindByID(id string) (village entity.Village, err
 	if response.StatusCode == http.StatusOK {
 		var villageResponse serviceResponse[villageResponse]
 		if decodeErr := json.NewDecoder(response.Body).Decode(&villageResponse); decodeErr != nil {
+			go func(logger logging.Logging, message string) {
+				logger.Error(message)
+			}(v.logger, decodeErr.Error())
+
 			log.Println(decodeErr)
 			err = repository.ErrDatabase
 		} else {

@@ -20,6 +20,7 @@ import (
 	ps "github.com/erikrios/reog-apps-apis/service/property"
 	sss "github.com/erikrios/reog-apps-apis/service/showschedule"
 	"github.com/erikrios/reog-apps-apis/utils/generator"
+	"github.com/erikrios/reog-apps-apis/utils/logging"
 	_ "github.com/erikrios/reog-apps-apis/validation"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -57,6 +58,11 @@ func main() {
 		log.Printf("Successfully connected to database with instance address: %p\n", db)
 	}
 
+	client, err := config.NewMongoDBDatabase()
+	if err != nil {
+		log.Println(err)
+	}
+
 	config.MigratePostgreSQLDatabase(db)
 	config.SetInitialDataPostgreSQLDatabase(db)
 
@@ -66,13 +72,14 @@ func main() {
 	tokenGenerator := generator.NewJWTTokenGenerator()
 	idGenerator := generator.NewNanoidIDGenerator()
 	qrCodeGenerator := generator.NewQRCodeGeneratorImpl()
+	logger := logging.NewMongoLogging(client)
 
-	adminRepository := ar.NewAdminRepositoryImpl(db)
-	groupRepository := gr.NewGroupRepositoryImpl(db)
-	villageRepository := vr.NewVillageRepositoryImpl()
-	addressRepository := dr.NewAddressRepositoryImpl(db)
-	propertyRepository := pr.NewPropertyRepositoryImpl(db)
-	showScheduleRepository := ssr.NewShowScheduleRepositoryImpl(db)
+	adminRepository := ar.NewAdminRepositoryImpl(db, logger)
+	groupRepository := gr.NewGroupRepositoryImpl(db, logger)
+	villageRepository := vr.NewVillageRepositoryImpl(logger)
+	addressRepository := dr.NewAddressRepositoryImpl(db, logger)
+	propertyRepository := pr.NewPropertyRepositoryImpl(db, logger)
+	showScheduleRepository := ssr.NewShowScheduleRepositoryImpl(db, logger)
 
 	adminService := as.NewAdminServiceImpl(adminRepository, passwordGenerator, tokenGenerator)
 	groupService := gs.NewGroupServiceImpl(groupRepository, villageRepository, idGenerator, qrCodeGenerator)
