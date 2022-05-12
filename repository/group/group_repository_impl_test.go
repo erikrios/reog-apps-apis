@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 type mockLog struct{}
@@ -200,9 +199,7 @@ func TestFindAll(t *testing.T) {
 		PreferSimpleProtocol: true,
 		Conn:                 db,
 	})
-	mockDB, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	mockDB, err := gorm.Open(dialector, &gorm.Config{})
 	var repo GroupRepository = NewGroupRepositoryImpl(mockDB, &mockLog{})
 
 	testCases := []struct {
