@@ -269,3 +269,91 @@ func TestFindAll(t *testing.T) {
 		})
 	}
 }
+
+func TestFindByID(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer db.Close()
+
+	dialector := postgres.New(postgres.Config{
+		DriverName:           "postgres",
+		DSN:                  "sqlmock_db_0",
+		PreferSimpleProtocol: true,
+		Conn:                 db,
+	})
+	mockDB, err := gorm.Open(dialector, &gorm.Config{})
+	var repo GroupRepository = NewGroupRepositoryImpl(mockDB, &mockLog{})
+
+	testCases := []struct {
+		name          string
+		expectedGroup entity.Group
+		expectedError error
+		mockBehaviour func()
+	}{
+		{
+			name: "it should return valid groups, when database successfully return the data",
+			expectedGroup: entity.Group{
+				ID:         "g-xyz",
+				Name:       "Paguyuban Reog",
+				Leader:     "Erik",
+				Address:    entity.Address{},
+				Properties: []entity.Property{},
+			},
+			expectedError: nil,
+			mockBehaviour: func() {
+				returnedRows := sqlmock.NewRows([]string{"id", "name", "leader", "created_at", "updated_at", "deleted_at"})
+				returnedRows.AddRow(
+					"g-xyz",
+					"Paguyuban Reog",
+					"Erik",
+					nil,
+					nil,
+					nil,
+				)
+				mock.ExpectQuery(".*").WillReturnRows(returnedRows)
+				mock.ExpectQuery(".*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "address", "village_id", "villlage_name", "district_id", "district_name", "regency_id", "regency_name, province_id", "province_name", "created_at", "updated_at", "deleted_at"}))
+				mock.ExpectQuery(".*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "amount", "group_id", "created_at", "updated_at", "deleted_at"}))
+			},
+		},
+		{
+			name:          "it should return ErrRecordNotFound, when group id not exists",
+			expectedGroup: entity.Group{},
+			expectedError: repository.ErrRecordNotFound,
+			mockBehaviour: func() {
+				mock.ExpectQuery(".*").WillReturnError(gorm.ErrRecordNotFound)
+			},
+		},
+		{
+			name:          "it should return ErrDatabase, when database return an error",
+			expectedGroup: entity.Group{},
+			expectedError: repository.ErrDatabase,
+			mockBehaviour: func() {
+				mock.ExpectQuery(".*").WillReturnError(gorm.ErrInvalidDB)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			testCase.mockBehaviour()
+
+			gotEntity, gotError := repo.FindByID(context.Background(), "g-xyz")
+
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+
+			if testCase.expectedError != nil {
+				assert.Equal(t, testCase.expectedError, gotError)
+			} else {
+				assert.NoError(t, gotError)
+				assert.Equal(t, testCase.expectedGroup, gotEntity)
+			}
+		})
+	}
+}
