@@ -29,7 +29,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h3 align="center">Ponorogo Regency API</h3>
+  <h3 align="center">Reog Apps API</h3>
 
   <p align="center">
    Reog Apps API: API For Reog Groups in Ponorogo 
